@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>iOS Simulator – Giant Script</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#000;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:-apple-system,BlinkMacSystemFont;
+}
+#phone{
+  width:390px;height:780px;
+  background:black;border-radius:45px;
+  padding:12px;box-shadow:0 0 80px black;
+}
+#screen{
+  width:100%;height:100%;
+  border-radius:35px;
+  overflow:hidden;position:relative;
+  background:url("https://i.imgur.com/4NJlZ5h.jpg") center/cover;
+}
+#status{
+  height:40px;padding:10px 18px;
+  color:white;display:flex;
+  justify-content:space-between;
+}
+#lock{
+  position:absolute;inset:0;
+  backdrop-filter:blur(20px);
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  color:white;z-index:10;
+}
+#time{font-size:70px}
+#home{display:none;padding:30px}
+.apps{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:22px;
+}
+.app{text-align:center;color:white;font-size:12px}
+.icon{
+  width:64px;height:64px;
+  border-radius:18px;margin:auto;
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;color:white;
+}
+.settings{background:linear-gradient(#aaa,#555)}
+.notes{background:linear-gradient(#ffd34d,#ffb700)}
+.camera{background:linear-gradient(#444,#000)}
+.safari{background:linear-gradient(#4db8ff,#0066ff)}
+.youtube{background:red}
+.calc{background:#333}
+.clock{background:black}
+
+.appWindow{
+  position:absolute;inset:0;
+  background:white;display:none;
+  flex-direction:column;z-index:20;
+}
+.header{
+  height:50px;background:#f2f2f2;
+  display:flex;align-items:center;
+  justify-content:center;font-weight:600;
+}
+.back{
+  position:absolute;left:10px;top:15px;
+  color:#007aff;cursor:pointer;
+}
+input,textarea,button{
+  font-size:16px;
+}
+#homebar{
+  position:absolute;bottom:8px;left:50%;
+  transform:translateX(-50%);
+  width:140px;height:5px;
+  background:white;border-radius:5px;
+}
+</style>
+</head>
+
+<body>
+<div id="phone"><div id="screen">
+
+<div id="status">
+  <span id="clock">9:41</span>
+  <span>📶 🔋</span>
+</div>
+
+<div id="lock" onclick="unlock()">
+  <div id="time">9:41</div>
+  Swipe up to unlock
+</div>
+
+<div id="home">
+  <div class="apps">
+    <div class="app" onclick="openApp('settings')"><div class="icon settings">⚙️</div>Settings</div>
+    <div class="app" onclick="openApp('notes')"><div class="icon notes">📝</div>Notes</div>
+    <div class="app" onclick="openCamera()"><div class="icon camera">📷</div>Camera</div>
+    <div class="app" onclick="openSafariApp()"><div class="icon safari">🌐</div>Safari</div>
+    <div class="app" onclick="openYouTube()"><div class="icon youtube">▶️</div>YouTube</div>
+    <div class="app" onclick="openApp('calc')"><div class="icon calc">🧮</div>Calc</div>
+    <div class="app" onclick="openApp('clockApp')"><div class="icon clock">⏰</div>Clock</div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="appWindow" id="settings">
+  <div class="header">Settings</div>
+  <div class="back" onclick="closeApp('settings')">Back</div>
+  <p style="padding:20px">Wi-Fi • Bluetooth • Display</p>
+</div>
+
+<!-- NOTES -->
+<div class="appWindow" id="notes">
+  <div class="header">Notes</div>
+  <div class="back" onclick="closeApp('notes')">Back</div>
+  <textarea id="noteArea" style="flex:1;border:none;padding:15px">My notes…</textarea>
+</div>
+
+<!-- SAFARI -->
+<div class="appWindow" id="safari">
+  <div class="header">Safari</div>
+  <div class="back" onclick="closeSafari()">Back</div>
+  <input id="safariInput" placeholder="Search or enter website"
+    style="margin:10px;padding:8px;border-radius:8px;border:1px solid #ccc">
+  <iframe id="safariFrame" style="flex:1;border:none"></iframe>
+</div>
+
+<!-- CALCULATOR -->
+<div class="appWindow" id="calc">
+  <div class="header">Calculator</div>
+  <div class="back" onclick="closeApp('calc')">Back</div>
+  <input id="calcDisplay" readonly style="margin:10px;padding:10px;font-size:24px">
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:10px">
+    <button onclick="press('1')">1</button><button onclick="press('2')">2</button><button onclick="press('3')">3</button><button onclick="press('+')">+</button>
+    <button onclick="press('4')">4</button><button onclick="press('5')">5</button><button onclick="press('6')">6</button><button onclick="press('-')">-</button>
+    <button onclick="press('7')">7</button><button onclick="press('8')">8</button><button onclick="press('9')">9</button><button onclick="press('*')">*</button>
+    <button onclick="press('0')">0</button><button onclick="press('.')">.</button><button onclick="calculate()">=</button><button onclick="press('/')">/</button>
+  </div>
+</div>
+
+<!-- CLOCK -->
+<div class="appWindow" id="clockApp">
+  <div class="header">Clock</div>
+  <div class="back" onclick="closeApp('clockApp')">Back</div>
+  <div id="bigClock" style="font-size:60px;text-align:center;margin-top:120px"></div>
+</div>
+
+<!-- CAMERA -->
+<div class="appWindow" id="camera">
+  <div class="header">Camera</div>
+  <div class="back" onclick="closeCamera()">Back</div>
+  <video id="cam" autoplay style="flex:1;background:black"></video>
+</div>
+
+<div id="homebar"></div>
+
+</div></div>
+
+<script>
+function unlock(){lock.style.display="none";home.style.display="block";}
+function openApp(id){document.getElementById(id).style.display="flex";}
+function closeApp(id){document.getElementById(id).style.display="none";}
+
+/* TIME */
+setInterval(()=>{
+  let d=new Date();
+  let t=d.getHours()+":"+d.getMinutes().toString().padStart(2,"0");
+  clock.innerText=time.innerText=t;
+  if(bigClock) bigClock.innerText=t;
+},1000);
+
+/* SAFARI – GUARANTEED ENTER */
+const safariInput=document.getElementById("safariInput");
+const safariFrame=document.getElementById("safariFrame");
+function openSafariApp(){
+  safari.style.display="flex";
+  setTimeout(()=>safariInput.focus(),50);
+}
+function closeSafari(){
+  safari.style.display="none";
+  safariFrame.src="about:blank";
+}
+document.addEventListener("keydown",e=>{
+  if(safari.style.display!=="flex")return;
+  if(document.activeElement!==safariInput)return;
+  if(e.key!=="Enter")return;
+  let v=safariInput.value.trim();
+  if(!v)return;
+  if(!v.includes(".")) safariFrame.src="https://duckduckgo.com/html/?q="+encodeURIComponent(v);
+  else{
+    if(!v.startsWith("http")) v="https://"+v;
+    if(v.includes("google")||v.includes("youtube"))
+      window.open(v,"_blank");
+    else safariFrame.src=v;
+  }
+});
+
+/* YOUTUBE */
+function openYouTube(){
+  window.open("https://m.youtube.com","_blank");
+}
+
+/* CALC */
+function press(v){calcDisplay.value+=v;}
+function calculate(){try{calcDisplay.value=eval(calcDisplay.value);}catch{calcDisplay.value="Error";}}
+
+/* CAMERA */
+let stream;
+function openCamera(){
+  camera.style.display="flex";
+  navigator.mediaDevices.getUserMedia({video:true}).then(s=>{
+    stream=s;cam.srcObject=s;
+  });
+}
+function closeCamera(){
+  if(stream)stream.getTracks().forEach(t=>t.stop());
+  camera.style.display="none";
+}
+</script>
+</body>
+</html>
