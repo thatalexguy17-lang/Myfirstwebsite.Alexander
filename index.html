@@ -7,49 +7,138 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-  background:#000;
+  background:radial-gradient(circle at top,#1b1f3b 0,#07070f 45%,#050505 100%);
   height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
   font-family:-apple-system,BlinkMacSystemFont;
+  color:#fff;
+  overflow:hidden;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:-40%;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(88,194,255,.35),transparent 45%),
+    radial-gradient(circle at 80% 10%,rgba(255,124,226,.25),transparent 50%),
+    radial-gradient(circle at 50% 80%,rgba(128,255,197,.2),transparent 55%);
+  filter:blur(10px);
+  z-index:-1;
 }
 #phone{
-  width:390px;height:780px;
-  background:black;border-radius:45px;
-  padding:12px;box-shadow:0 0 80px black;
+  width:392px;height:790px;
+  background:linear-gradient(160deg,#1a1a1a,#050505);
+  border-radius:52px;
+  padding:12px;
+  box-shadow:0 25px 80px rgba(0,0,0,.75),0 0 30px rgba(98,138,255,.2);
+  border:1px solid rgba(255,255,255,.1);
+  position:relative;
+}
+#phone::before{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:46px;
+  border:1px solid rgba(255,255,255,.08);
+  pointer-events:none;
 }
 #screen{
   width:100%;height:100%;
-  border-radius:35px;
+  border-radius:40px;
   overflow:hidden;position:relative;
-  background:url("https://i.imgur.com/4NJlZ5h.jpg") center/cover;
+  background:
+    linear-gradient(145deg,rgba(0,0,0,.25),rgba(0,0,0,.7)),
+    radial-gradient(circle at 20% 20%,rgba(120,180,255,.5),transparent 55%),
+    radial-gradient(circle at 80% 10%,rgba(255,140,220,.35),transparent 50%),
+    radial-gradient(circle at 50% 80%,rgba(120,255,200,.3),transparent 55%),
+    linear-gradient(140deg,#0b0f2a,#1f0f2b 55%,#0b1b2a);
+}
+#screen::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.5) 0,transparent 40%,rgba(0,0,0,.55) 100%);
+  pointer-events:none;
+  z-index:0;
 }
 #status{
   height:40px;padding:10px 18px;
   color:white;display:flex;
   justify-content:space-between;
+  position:relative;
+  z-index:2;
+}
+#status::before{
+  content:"";
+  position:absolute;
+  top:6px;left:50%;
+  transform:translateX(-50%);
+  width:140px;height:26px;
+  border-radius:18px;
+  background:rgba(0,0,0,.6);
+  box-shadow:inset 0 0 6px rgba(255,255,255,.1);
+  z-index:-1;
+}
+#notch{
+  position:absolute;
+  top:10px;left:50%;
+  transform:translateX(-50%);
+  width:120px;height:22px;
+  background:#000;
+  border-radius:14px;
+  box-shadow:0 2px 8px rgba(0,0,0,.6);
+}
+#status span{
+  font-weight:600;
+  text-shadow:0 2px 4px rgba(0,0,0,.5);
 }
 #lock{
   position:absolute;inset:0;
-  backdrop-filter:blur(20px);
+  backdrop-filter:blur(30px) saturate(140%);
+  background:rgba(0,0,0,.35);
   display:flex;flex-direction:column;
   justify-content:center;align-items:center;
   color:white;z-index:10;
+  gap:10px;
+  text-align:center;
 }
-#time{font-size:70px}
-#home{display:none;padding:30px}
+#time{font-size:72px;font-weight:600;letter-spacing:2px}
+#date{
+  font-size:16px;
+  text-transform:uppercase;
+  letter-spacing:3px;
+  opacity:.85;
+}
+#lockHint{
+  margin-top:30px;
+  font-size:14px;
+  opacity:.7;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+#home{display:none;padding:32px;position:relative;z-index:1}
 .apps{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:22px;
 }
-.app{text-align:center;color:white;font-size:12px}
+.app{
+  text-align:center;
+  color:white;
+  font-size:12px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
 .icon{
   width:64px;height:64px;
   border-radius:18px;margin:auto;
   display:flex;align-items:center;justify-content:center;
   font-size:30px;color:white;
+  box-shadow:0 10px 20px rgba(0,0,0,.35),inset 0 0 8px rgba(255,255,255,.25);
 }
 .settings{background:linear-gradient(#aaa,#555)}
 .notes{background:linear-gradient(#ffd34d,#ffb700)}
@@ -58,6 +147,43 @@ body{
 .youtube{background:red}
 .calc{background:#333}
 .clock{background:black}
+.widgetRow{
+  display:flex;
+  gap:16px;
+  margin-bottom:24px;
+}
+.widget{
+  flex:1;
+  background:rgba(255,255,255,.12);
+  border-radius:20px;
+  padding:14px;
+  backdrop-filter:blur(10px);
+  box-shadow:inset 0 0 10px rgba(255,255,255,.08);
+}
+.widgetTitle{
+  font-size:12px;
+  letter-spacing:1px;
+  opacity:.7;
+  text-transform:uppercase;
+}
+.weather{
+  font-size:28px;
+  margin-top:8px;
+}
+.dock{
+  margin-top:28px;
+  background:rgba(0,0,0,.35);
+  border-radius:28px;
+  padding:14px 22px;
+  display:flex;
+  justify-content:space-between;
+  backdrop-filter:blur(18px);
+}
+.dock .icon{
+  width:54px;height:54px;
+  border-radius:16px;
+  font-size:26px;
+}
 
 .appWindow{
   position:absolute;inset:0;
@@ -80,7 +206,8 @@ input,textarea,button{
   position:absolute;bottom:8px;left:50%;
   transform:translateX(-50%);
   width:140px;height:5px;
-  background:white;border-radius:5px;
+  background:rgba(255,255,255,.85);border-radius:5px;
+  box-shadow:0 4px 10px rgba(0,0,0,.4);
 }
 </style>
 </head>
@@ -91,22 +218,55 @@ input,textarea,button{
 <div id="status">
   <span id="clock">9:41</span>
   <span>📶 🔋</span>
+  <div id="notch"></div>
 </div>
 
 <div id="lock" onclick="unlock()">
   <div id="time">9:41</div>
-  Swipe up to unlock
+  <div id="date">Friday • Dream Mode</div>
+  <div id="lockHint">Swipe up to unlock ✨</div>
+  <div id="faceControls" style="margin-top:12px">
+    <button id="faceBtn" onclick="startFaceID()" style="padding:8px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,#2ecc71,#27ae60);color:#021;cursor:pointer">Use Face ID</button>
+    <div id="faceStatus" style="margin-top:8px;opacity:.85;font-size:13px"></div>
+    <div id="faceOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);align-items:center;justify-content:center;z-index:50">
+      <div style="width:340px;height:520px;background:#000;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+        <video id="faceVideo" autoplay playsinline style="flex:1;background:#000"></video>
+        <div style="padding:10px;display:flex;gap:8px;justify-content:center;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)">
+          <button onclick="stopFaceID()" style="padding:8px 12px;border-radius:10px;border:none;background:#fff;color:#111;cursor:pointer">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div id="home">
+  <div class="widgetRow">
+    <div class="widget">
+      <div class="widgetTitle">Today</div>
+      <div class="weather">24° ☀️</div>
+      <div style="font-size:12px;opacity:.7">Feels like 26° • Clear</div>
+    </div>
+    <div class="widget">
+      <div class="widgetTitle">Focus</div>
+      <div style="font-size:20px;margin-top:10px">Deep Work</div>
+      <div style="font-size:12px;opacity:.7;margin-top:6px">2h 14m remaining</div>
+    </div>
+  </div>
   <div class="apps">
     <div class="app" onclick="openApp('settings')"><div class="icon settings">⚙️</div>Settings</div>
+    <div class="app" onclick="openMap()"><div class="icon safari">🗺️</div>Maps</div>
     <div class="app" onclick="openApp('notes')"><div class="icon notes">📝</div>Notes</div>
     <div class="app" onclick="openCamera()"><div class="icon camera">📷</div>Camera</div>
     <div class="app" onclick="openSafariApp()"><div class="icon safari">🌐</div>Safari</div>
     <div class="app" onclick="openYouTube()"><div class="icon youtube">▶️</div>YouTube</div>
     <div class="app" onclick="openApp('calc')"><div class="icon calc">🧮</div>Calc</div>
     <div class="app" onclick="openApp('clockApp')"><div class="icon clock">⏰</div>Clock</div>
+  </div>
+  <div class="dock">
+    <div class="icon safari">🌐</div>
+    <div class="icon notes">📝</div>
+    <div class="icon youtube">▶️</div>
+    <div class="icon settings">⚙️</div>
   </div>
 </div>
 
@@ -132,6 +292,31 @@ input,textarea,button{
     style="margin:10px;padding:8px;border-radius:8px;border:1px solid #ccc">
   <iframe id="safariFrame" style="flex:1;border:none"></iframe>
 </div>
+
+<!-- SOLAR SYSTEM (3D) -->
+<div class="appWindow" id="solar">
+    <div class="header">Solar System</div>
+    <div class="back" onclick="closeSolarSystem()">Back</div>
+    <div style="display:flex;gap:8px;justify-content:center;padding:8px 0;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)">
+      <button onclick="zoomOut()" style="padding:6px 10px;border-radius:8px;border:none;background:#222;color:#fff;cursor:pointer">−</button>
+      <button onclick="zoomIn()" style="padding:6px 10px;border-radius:8px;border:none;background:#222;color:#fff;cursor:pointer">+</button>
+    </div>
+    <div id="solarContainer" style="flex:1;position:relative;background:#000"></div>
+</div>
+
+  <!-- MAPS -->
+  <div class="appWindow" id="maps">
+    <div class="header">Maps</div>
+    <div class="back" onclick="closeMap()">Back</div>
+    <div style="display:flex;gap:8px;padding:8px;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)">
+      <input id="mapSearch" placeholder="Search place" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ccc">
+      <button onclick="doSearch()" style="padding:6px 10px;border-radius:8px;border:none;background:#222;color:#fff;cursor:pointer">Search</button>
+      <button onclick="geolocate()" style="padding:6px 10px;border-radius:8px;border:none;background:#2277ff;color:#fff;cursor:pointer">Locate</button>
+      <button id="satToggle" onclick="toggleSatellite()" style="padding:6px 10px;border-radius:8px;border:none;background:#444;color:#fff;cursor:pointer">Satellite</button>
+      <button id="googleToggle" onclick="toggleGoogle()" style="padding:6px 10px;border-radius:8px;border:none;background:#d44638;color:#fff;cursor:pointer">Google</button>
+    </div>
+    <div id="mapContainer" style="flex:1;position:relative;background:#ddd"></div>
+  </div>
 
 <!-- CALCULATOR -->
 <div class="appWindow" id="calc">
@@ -165,7 +350,34 @@ input,textarea,button{
 </div></div>
 
 <script>
-function unlock(){lock.style.display="none";home.style.display="block";}
+const lockScreen=document.getElementById("lock");
+const homeScreen=document.getElementById("home");
+const clockDisplay=document.getElementById("clock");
+const timeDisplay=document.getElementById("time");
+const dateDisplay=document.getElementById("date");
+const bigClockDisplay=document.getElementById("bigClock");
+const calcDisplay=document.getElementById("calcDisplay");
+const camera=document.getElementById("camera");
+const cam=document.getElementById("cam");
+const safari=document.getElementById("safari");
+const safariInput=document.getElementById("safariInput");
+const safariFrame=document.getElementById("safariFrame");
+const noteArea = document.getElementById("noteArea");
+
+// Solar system state
+let solarInitialized = false;
+let solarRenderer = null;
+let solarScene = null;
+let solarCamera = null;
+let solarAnimationId = null;
+let solarContainer = null;
+let cameraDistance = 180;
+let solarWheelHandler = null;
+
+function unlock(){
+  lockScreen.style.display="none";
+  homeScreen.style.display="block";
+}
 function openApp(id){document.getElementById(id).style.display="flex";}
 function closeApp(id){document.getElementById(id).style.display="none";}
 
@@ -173,13 +385,15 @@ function closeApp(id){document.getElementById(id).style.display="none";}
 setInterval(()=>{
   let d=new Date();
   let t=d.getHours()+":"+d.getMinutes().toString().padStart(2,"0");
-  clock.innerText=time.innerText=t;
-  if(bigClock) bigClock.innerText=t;
+  clockDisplay.innerText=timeDisplay.innerText=t;
+  if(bigClockDisplay) bigClockDisplay.innerText=t;
+  const day=d.toLocaleDateString("en-US",{weekday:"long"});
+  const month=d.toLocaleDateString("en-US",{month:"short"});
+  const dateNum=d.getDate();
+  dateDisplay.innerText=`${day} • ${month} ${dateNum}`;
 },1000);
 
 /* SAFARI – GUARANTEED ENTER */
-const safariInput=document.getElementById("safariInput");
-const safariFrame=document.getElementById("safariFrame");
 function openSafariApp(){
   safari.style.display="flex";
   setTimeout(()=>safariInput.focus(),50);
@@ -207,10 +421,77 @@ document.addEventListener("keydown",e=>{
 function openYouTube(){
   window.open("https://m.youtube.com","_blank");
 }
+/* Face ID (demo) */
+let faceStream=null;
+let faceVideo=document.getElementById("faceVideo");
+let faceOverlay=document.getElementById("faceOverlay");
+let faceStatus=document.getElementById("faceStatus");
+let faceDetector=null;
+let faceLoopId=null;
+let faceSuccessCount=0;
 
-/* CALC */
-function press(v){calcDisplay.value+=v;}
-function calculate(){try{calcDisplay.value=eval(calcDisplay.value);}catch{calcDisplay.value="Error";}}
+async function startFaceID(){
+  faceStatus.innerText='Initializing camera...';
+  try{
+    faceStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}});
+    faceVideo.srcObject = faceStream;
+    faceOverlay.style.display = 'flex';
+    faceStatus.innerText='Looking for a face — please center your face in view';
+    if('FaceDetector' in window){
+      faceDetector = new FaceDetector({fastMode:true, maxDetectedFaces:1});
+      faceSuccessCount = 0;
+      faceLoop();
+    } else {
+      faceStatus.innerText='FaceDetector API not available — click Verify to simulate verification';
+      // Provide a fallback "simulate" flow: after 2s, accept if user keeps camera open
+      setTimeout(()=>{
+        faceStatus.innerText='No native face detector; unlocking in 2s if camera is still active...';
+        setTimeout(()=>{
+          if(faceStream) { faceStatus.innerText='Verified (simulated)'; stopFaceID(); unlock(); }
+        },2000);
+      },500);
+    }
+  }catch(err){
+    faceStatus.innerText='Camera permission denied or error.';
+    console.error('FaceID start error',err);
+  }
+}
+
+async function faceLoop(){
+  if(!faceDetector || !faceVideo) return;
+  try{
+    const faces = await faceDetector.detect(faceVideo);
+    if(faces && faces.length>0){
+      faceSuccessCount++;
+      faceStatus.innerText = `Face detected (${faceSuccessCount}/3)`;
+      if(faceSuccessCount>=3){
+        faceStatus.innerText='Face verified';
+        stopFaceID();
+        unlock();
+        return;
+      }
+    } else {
+      faceSuccessCount = 0;
+      faceStatus.innerText = 'No face detected — please hold still';
+    }
+  }catch(e){
+    console.error('Face detection error',e);
+    faceStatus.innerText='Detection error — falling back';
+  }
+  faceLoopId = requestAnimationFrame(faceLoop);
+}
+
+function stopFaceID(){
+  if(faceLoopId) cancelAnimationFrame(faceLoopId);
+  faceLoopId = null;
+  if(faceStream){
+    faceStream.getTracks().forEach(t=>t.stop());
+    faceStream = null;
+  }
+  if(faceVideo) faceVideo.srcObject = null;
+  if(faceOverlay) faceOverlay.style.display = 'none';
+  faceStatus.innerText='';
+}
 
 /* CAMERA */
 let stream;
@@ -218,12 +499,353 @@ function openCamera(){
   camera.style.display="flex";
   navigator.mediaDevices.getUserMedia({video:true}).then(s=>{
     stream=s;cam.srcObject=s;
+  }).catch(e=>{
+    console.error('Camera error', e);
   });
 }
 function closeCamera(){
   if(stream)stream.getTracks().forEach(t=>t.stop());
   camera.style.display="none";
 }
+
+/* SOLAR: load three.js dynamically and create a simple 3D solar system */
+function loadThree(callback){
+  if(window.THREE) return callback();
+  const s=document.createElement('script');
+  s.src='https://unpkg.com/three@0.152.2/build/three.min.js';
+  s.onload = callback;
+  s.onerror = ()=>{ console.error('Failed to load three.js'); };
+  document.head.appendChild(s);
+}
+
+function openSolarSystem(){
+  const solarEl=document.getElementById('solar');
+  solarEl.style.display='flex';
+  if(!solarInitialized){
+    solarContainer = document.getElementById('solarContainer');
+    loadThree(()=>{
+      try{ initSolar(); solarInitialized=true; }
+      catch(e){ console.error('Solar init error',e); }
+      // ensure renderer matches container after layout
+      setTimeout(()=>{
+        if(solarRenderer && solarContainer){
+          solarRenderer.setSize(solarContainer.clientWidth, solarContainer.clientHeight);
+          if(solarCamera){ solarCamera.aspect = solarContainer.clientWidth/solarContainer.clientHeight; solarCamera.updateProjectionMatrix(); }
+        }
+      },60);
+    });
+  }
+}
+
+function closeSolarSystem(){
+  const solarEl=document.getElementById('solar');
+  solarEl.style.display='none';
+  // stop animation and dispose
+  if(solarAnimationId) cancelAnimationFrame(solarAnimationId);
+  solarAnimationId = null;
+  if(solarRenderer){
+    solarRenderer.dispose();
+    solarRenderer.domElement.remove();
+    solarRenderer = null;
+  }
+  solarScene = null; solarCamera = null; solarInitialized = false;
+}
+
+function initSolar(){
+  const THREE = window.THREE;
+  solarScene = new THREE.Scene();
+  solarCamera = new THREE.PerspectiveCamera(45, solarContainer.clientWidth/solarContainer.clientHeight, 0.1, 2000);
+  cameraDistance = 180;
+  solarCamera.position.set(0, 50, cameraDistance);
+  solarRenderer = new THREE.WebGLRenderer({antialias:true});
+  solarRenderer.setPixelRatio(window.devicePixelRatio || 1);
+  solarRenderer.setSize(solarContainer.clientWidth, solarContainer.clientHeight);
+  solarContainer.appendChild(solarRenderer.domElement);
+
+  const ambient = new THREE.AmbientLight(0x333333);
+  solarScene.add(ambient);
+
+  // Sun
+  const sunGeo = new THREE.SphereGeometry(16, 32, 32);
+  const sunMat = new THREE.MeshBasicMaterial({color:0xffcc33});
+  const sun = new THREE.Mesh(sunGeo, sunMat);
+  solarScene.add(sun);
+  const sunLight = new THREE.PointLight(0xffffff, 2, 1000);
+  sunLight.position.set(0,0,0);
+  solarScene.add(sunLight);
+
+  // Planets data: [distance, size, color, speed]
+  const planets = [
+    [28, 3.5, 0x888888, 0.02],
+    [40, 4.8, 0xffcc99, 0.015],
+    [56, 5.5, 0x4db8ff, 0.01],
+    [78, 9.0, 0xffaa33, 0.007],
+    [110, 7.0, 0x996633, 0.005]
+  ];
+
+  const planetObjects = [];
+  planets.forEach(p=>{
+    const geo = new THREE.SphereGeometry(p[1], 24, 24);
+    const mat = new THREE.MeshPhongMaterial({color:p[2]});
+    const m = new THREE.Mesh(geo, mat);
+    m.userData = {dist:p[0], speed:p[3], angle: Math.random()*Math.PI*2};
+    solarScene.add(m);
+    planetObjects.push(m);
+    // orbit line
+    const orbitGeo = new THREE.RingGeometry(p[0]-0.05, p[0]+0.05, 64);
+    const orbitMat = new THREE.MeshBasicMaterial({color:0x444444, side: THREE.DoubleSide});
+    const orbit = new THREE.Mesh(orbitGeo, orbitMat);
+    orbit.rotation.x = Math.PI/2;
+    solarScene.add(orbit);
+  });
+
+  function onResize(){
+    if(!solarCamera || !solarRenderer) return;
+    solarCamera.aspect = solarContainer.clientWidth/solarContainer.clientHeight;
+    solarCamera.updateProjectionMatrix();
+    solarRenderer.setSize(solarContainer.clientWidth, solarContainer.clientHeight);
+  }
+  window.addEventListener('resize', onResize);
+
+  // wheel zoom handler
+  solarWheelHandler = function(e){
+    e.preventDefault();
+    const delta = Math.sign(e.deltaY) * 15;
+    setCameraDistance(cameraDistance + delta);
+  };
+  solarContainer.addEventListener('wheel', solarWheelHandler, {passive:false});
+
+  function animate(){
+    solarAnimationId = requestAnimationFrame(animate);
+    planetObjects.forEach(p=>{
+      p.userData.angle += p.userData.speed;
+      p.position.x = Math.cos(p.userData.angle) * p.userData.dist;
+      p.position.z = Math.sin(p.userData.angle) * p.userData.dist;
+      p.rotation.y += 0.01;
+    });
+    sun.rotation.y += 0.002;
+    solarRenderer.render(solarScene, solarCamera);
+  }
+  animate();
+}
+
+function setCameraDistance(d){
+  const minD = 40, maxD = 1000;
+  cameraDistance = Math.max(minD, Math.min(maxD, d));
+  if(solarCamera) solarCamera.position.z = cameraDistance;
+}
+
+function zoomIn(){ setCameraDistance(cameraDistance - 30); }
+function zoomOut(){ setCameraDistance(cameraDistance + 30); }
+
+// detect secret phrase in notes
+if(noteArea){
+  noteArea.addEventListener('input', e=>{
+    const v = (e.target.value||'').trim().toLowerCase();
+    if(v === 'secret minecraft'){
+      openSolarSystem();
+    }
+  });
+}
+/* MAPS: load Leaflet and initialize map with search/geolocate */
+let mapInitialized = false;
+let mapInstance = null;
+let mapMarker = null;
+
+function loadLeaflet(callback){
+  if(window.L) return callback();
+  // CSS
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+  document.head.appendChild(link);
+  // JS
+  const s = document.createElement('script');
+  s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+  s.onload = callback;
+  s.onerror = ()=>console.error('Failed to load Leaflet');
+  document.head.appendChild(s);
+}
+
+function openMap(){
+  const el = document.getElementById('maps');
+  el.style.display = 'flex';
+  if(!mapInitialized){
+    const container = document.getElementById('mapContainer');
+    // ensure container has explicit height
+    container.style.position = 'relative';
+    container.style.minHeight = '300px';
+    loadLeaflet(()=>{
+      try{ initMap(); mapInitialized = true; }
+      catch(e){ console.error('Map init error', e); }
+    });
+  }
+}
+
+function closeMap(){
+  const el = document.getElementById('maps');
+  el.style.display = 'none';
+  if(mapInstance){ mapInstance.remove(); mapInstance = null; }
+  mapInitialized = false;
+}
+
+function initMap(){
+  const L = window.L;
+  const container = document.getElementById('mapContainer');
+  container.innerHTML = '';
+  const mapDiv = document.createElement('div');
+  mapDiv.style.width = '100%';
+  mapDiv.style.height = '100%';
+  container.appendChild(mapDiv);
+  mapInstance = L.map(mapDiv).setView([20,0], 2);
+  // define both base (OSM) and satellite (Esri WorldImagery)
+  mapInstance._osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  });
+  mapInstance._satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19,
+    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics'
+  });
+  mapInstance._currentType = 'osm';
+  mapInstance._osmLayer.addTo(mapInstance);
+  // Leaflet may need an invalidateSize after layout
+  setTimeout(()=>{ try{ if(mapInstance) mapInstance.invalidateSize(); }catch(e){} },60);
+}
+
+async function doSearch(){
+  const q = (document.getElementById('mapSearch').value||'').trim();
+  if(!q) return;
+  try{
+    const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q), {headers:{'Accept':'application/json'}});
+    const data = await res.json();
+    if(!data || data.length===0) return alert('No results');
+    const first = data[0];
+    const lat = parseFloat(first.lat), lon = parseFloat(first.lon);
+    if(mapMarker) mapMarker.remove();
+    mapInstance.setView([lat, lon], 13);
+    mapMarker = window.L.marker([lat, lon]).addTo(mapInstance).bindPopup(first.display_name).openPopup();
+  }catch(e){ console.error('Search error',e); }
+}
+
+function geolocate(){
+  if(!navigator.geolocation) return alert('Geolocation not supported');
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const lat = pos.coords.latitude, lon = pos.coords.longitude;
+    if(mapMarker) mapMarker.remove();
+    mapInstance.setView([lat, lon], 14);
+    mapMarker = window.L.marker([lat, lon]).addTo(mapInstance).bindPopup('You are here').openPopup();
+  }, err=>{ alert('Unable to get location: '+err.message); });
+}
+
+function setMapType(type){
+  if(!mapInstance) return;
+  if(type === mapInstance._currentType) return;
+  if(mapInstance._currentType === 'osm') mapInstance.removeLayer(mapInstance._osmLayer);
+  else if(mapInstance._currentType === 'sat') mapInstance.removeLayer(mapInstance._satLayer);
+  if(type === 'osm') mapInstance._osmLayer.addTo(mapInstance);
+  else if(type === 'sat') mapInstance._satLayer.addTo(mapInstance);
+  mapInstance._currentType = type;
+  const btn = document.getElementById('satToggle');
+  if(btn) btn.innerText = (type==='sat' ? 'Map' : 'Satellite');
+}
+
+function toggleSatellite(){
+  if(!mapInstance) return;
+  setMapType(mapInstance._currentType === 'osm' ? 'sat' : 'osm');
+}
+
+// Google mode: use an embeddable iframe (maps?q=...&output=embed)
+let mapMode = 'leaflet';
+let googleIframe = null;
+
+function ensureMapContainer(){
+  const container = document.getElementById('mapContainer');
+  if(!container) return null;
+  return container;
+}
+
+function switchToGoogle(q){
+  const container = ensureMapContainer(); if(!container) return;
+  // remove leaflet map if present
+  if(mapInstance){ mapInstance.remove(); mapInstance = null; mapInitialized = false; }
+  container.innerHTML = '';
+  googleIframe = document.createElement('iframe');
+  googleIframe.style.border = 'none';
+  googleIframe.style.width = '100%';
+  googleIframe.style.height = '100%';
+  const base = 'https://www.google.com/maps';
+  let src = base;
+  if(q){ src = base + '?q=' + encodeURIComponent(q) + '&output=embed'; }
+  else src = base + '?output=embed';
+  googleIframe.src = src;
+  container.appendChild(googleIframe);
+  mapMode = 'google';
+  const gbtn = document.getElementById('googleToggle'); if(gbtn) gbtn.innerText='Leaflet';
+}
+
+function switchToLeaflet(){
+  const container = ensureMapContainer(); if(!container) return;
+  if(googleIframe){ googleIframe.remove(); googleIframe = null; }
+  // reinit leaflet
+  loadLeaflet(()=>{ try{ initMap(); mapInitialized = true; } catch(e){ console.error(e); } });
+  // ensure resize after switching
+  setTimeout(()=>{ try{ if(mapInstance) mapInstance.invalidateSize(); }catch(e){} },120);
+  mapMode = 'leaflet';
+  const gbtn = document.getElementById('googleToggle'); if(gbtn) gbtn.innerText='Google';
+}
+
+function toggleGoogle(){
+  if(mapMode === 'leaflet'){
+    const q = (document.getElementById('mapSearch').value||'').trim();
+    switchToGoogle(q||null);
+  } else {
+    switchToLeaflet();
+  }
+}
+
+// adapt search to google mode
+const _origDoSearch = doSearch;
+async function doSearch(){
+  const q = (document.getElementById('mapSearch').value||'').trim();
+  if(!q) return;
+  if(mapMode === 'google'){
+    if(googleIframe) googleIframe.src = 'https://www.google.com/maps?q='+encodeURIComponent(q)+'&output=embed';
+    else switchToGoogle(q);
+    return;
+  }
+  // fallback to original leaflet search
+  return _origDoSearch();
+}
+
+/* CALC */
+function press(v){calcDisplay.value+=v;}
+function calculate(){
+  try{calcDisplay.value=eval(calcDisplay.value);}catch{calcDisplay.value="Error";}
+}
+
+// Expose inline handlers to the window so onclick attributes work
+window.unlock = unlock;
+window.openApp = openApp;
+window.closeApp = closeApp;
+window.openCamera = openCamera;
+window.closeCamera = closeCamera;
+window.openSafariApp = openSafariApp;
+window.closeSafari = closeSafari;
+window.openYouTube = openYouTube;
+window.startFaceID = startFaceID;
+window.stopFaceID = stopFaceID;
+window.openSolarSystem = openSolarSystem;
+window.closeSolarSystem = closeSolarSystem;
+window.zoomIn = zoomIn;
+window.zoomOut = zoomOut;
+window.openMap = openMap;
+window.closeMap = closeMap;
+window.doSearch = doSearch;
+window.geolocate = geolocate;
+window.toggleSatellite = toggleSatellite;
+window.toggleGoogle = toggleGoogle;
+
 </script>
 </body>
 </html>
