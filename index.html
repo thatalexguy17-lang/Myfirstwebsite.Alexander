@@ -386,42 +386,42 @@ input,textarea,button{
       <span style="font-size:12px;opacity:.7">Edge • Camera • YouTube</span>
     </div>
     <div class="winDesktop">
-      <div class="winTile">
+      <div class="winTile" onclick="openWindowsApp('edge')" style="cursor:pointer">
         <div class="icon edge">🌐</div>
         <strong>Edge</strong>
         <span style="opacity:.7">Browse the web fast</span>
       </div>
-      <div class="winTile">
+      <div class="winTile" onclick="openWindowsApp('camera')" style="cursor:pointer">
         <div class="icon winCamera">📷</div>
         <strong>Camera</strong>
         <span style="opacity:.7">Take a quick photo</span>
       </div>
-      <div class="winTile">
+      <div class="winTile" onclick="openWindowsApp('youtube')" style="cursor:pointer">
         <div class="icon winYouTube">▶️</div>
         <strong>YouTube</strong>
         <span style="opacity:.7">Watch trending</span>
       </div>
-      <div class="winTile">
+      <div class="winTile" onclick="openWindowsApp('settings')" style="cursor:pointer">
         <div class="icon settings">⚙️</div>
         <strong>Settings</strong>
         <span style="opacity:.7">Personalize</span>
       </div>
-      <div class="winTile">
+      <div class="winTile" onclick="openWindowsApp('notes')" style="cursor:pointer">
         <div class="icon notes">📝</div>
         <strong>Notes</strong>
         <span style="opacity:.7">Quick ideas</span>
       </div>
-      <div class="winTile">
+      <div class="winTile" onclick="openWindowsApp('maps')" style="cursor:pointer">
         <div class="icon safari">🗺️</div>
         <strong>Maps</strong>
         <span style="opacity:.7">Explore places</span>
       </div>
     </div>
     <div class="winTaskbar">
-      <div class="icon windows">🪟</div>
-      <div class="icon edge">🌐</div>
-      <div class="icon winCamera">📷</div>
-      <div class="icon winYouTube">▶️</div>
+      <div class="icon windows" onclick="openWindowsApp('start')" style="cursor:pointer">🪟</div>
+      <div class="icon edge" onclick="openWindowsApp('edge')" style="cursor:pointer">🌐</div>
+      <div class="icon winCamera" onclick="openWindowsApp('camera')" style="cursor:pointer">📷</div>
+      <div class="icon winYouTube" onclick="openWindowsApp('youtube')" style="cursor:pointer">▶️</div>
     </div>
   </div>
   <div class="back" onclick="closeWindows11()" style="top:12px;right:16px;left:auto;">Close</div>
@@ -523,6 +523,37 @@ function openWindows11(){
 }
 function closeWindows11(){
   windows11.style.display="none";
+}
+function openWindowsApp(app){
+  switch(app){
+    case 'edge':
+      closeWindows11();
+      openSafariApp();
+      return;
+    case 'camera':
+      closeWindows11();
+      openCamera();
+      return;
+    case 'youtube':
+      openYouTube();
+      return;
+    case 'settings':
+      closeWindows11();
+      openApp('settings');
+      return;
+    case 'notes':
+      closeWindows11();
+      openApp('notes');
+      return;
+    case 'maps':
+      closeWindows11();
+      openMap();
+      return;
+    case 'start':
+    default:
+      bootOverlay.style.display="flex";
+      setTimeout(()=>{ bootOverlay.style.display="none"; },1200);
+  }
 }
 
 /* TIME */
@@ -979,6 +1010,7 @@ window.closeSafari = closeSafari;
 window.openYouTube = openYouTube;
 window.openWindows11 = openWindows11;
 window.closeWindows11 = closeWindows11;
+window.openWindowsApp = openWindowsApp;
 window.startFaceID = startFaceID;
 window.stopFaceID = stopFaceID;
 window.openSolarSystem = openSolarSystem;
