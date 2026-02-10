@@ -153,6 +153,7 @@ body::before{
 .winYouTube{background:linear-gradient(135deg,#ff2f2f,#b10000)}
 .roblox{background:linear-gradient(135deg,#202020,#555)}
 .phonemaker{background:linear-gradient(135deg,#7b61ff,#29d3ff)}
+.gemini{background:linear-gradient(135deg,#4a8bff,#9f6bff)}
 .widgetRow{
   display:flex;
   gap:16px;
@@ -579,6 +580,7 @@ input,textarea,button{
       <div class="app" onclick="openApp('minecraft')"><div class="icon calc">🧱</div>Minecraft</div>
       <div class="app" onclick="openApp('roblox')"><div class="icon roblox">◧</div>Roblox</div>
       <div class="app" onclick="openApp('phoneMaker')"><div class="icon phonemaker">🎨</div>Phone Maker</div>
+      <div class="app" onclick="openApp('gemini')"><div class="icon gemini">✦</div>Gemini</div>
       <div class="app" onclick="openSafariApp()"><div class="icon safari">🌐</div>Safari</div>
       <div class="app" onclick="openYouTube()"><div class="icon youtube">▶️</div>YouTube</div>
       <div class="app" onclick="openApp('calc')"><div class="icon calc">🧮</div>Calc</div>
@@ -624,7 +626,7 @@ input,textarea,button{
   <div class="winWrap">
     <div class="winHeader">
       <span>Windows 11</span>
-      <span style="font-size:12px;opacity:.7">Edge • Camera • YouTube • Roblox</span>
+      <span style="font-size:12px;opacity:.7">Edge • Camera • YouTube • Roblox • Gemini</span>
     </div>
     <div class="winDesktop">
       <div class="winTile" onclick="openWindowsApp('edge')" style="cursor:pointer">
@@ -671,6 +673,11 @@ input,textarea,button{
         <div class="icon phonemaker">🎨</div>
         <strong>Phone Maker</strong>
         <span style="opacity:.7">Design your phone</span>
+      </div>
+      <div class="winTile" onclick="openWindowsApp('gemini')" style="cursor:pointer">
+        <div class="icon gemini">✦</div>
+        <strong>Gemini</strong>
+        <span style="opacity:.7">Ask anything</span>
       </div>
     </div>
     <div class="winAppPane" id="winAppPane">
@@ -769,6 +776,21 @@ input,textarea,button{
               </div>
               <div class="robloxNowPlaying" id="winPhoneMakerStatus">Ready to design.</div>
               <button class="designApply" onclick="applyPhoneDesign()">Apply & Use Phone</button>
+            </div>
+          </div>
+        </div>
+        <div class="winAppView" id="winGemini">
+          <div class="phoneMakerLayout">
+            <div class="phoneMakerCard">
+              <h4>Gemini Assistant</h4>
+              <p style="font-size:13px;opacity:.85;line-height:1.4">Type a prompt and launch Gemini in a new tab. It opens the official Gemini app so it works reliably.</p>
+              <textarea id="geminiPromptWin" style="margin-top:8px;width:100%;min-height:120px;border-radius:10px;border:1px solid rgba(255,255,255,.15);padding:10px;background:#111827;color:#fff" placeholder="Ask Gemini anything..."></textarea>
+              <button class="designApply" onclick="openGeminiWithPrompt('win')">Open Gemini</button>
+            </div>
+            <div class="phoneMakerCard">
+              <h4>Status</h4>
+              <div id="geminiStatusWin" class="robloxNowPlaying">Ready.</div>
+              <button class="wallBtn" onclick="openGeminiHome()">Open Gemini Home</button>
             </div>
           </div>
         </div>
@@ -907,6 +929,24 @@ input,textarea,button{
   </div>
 </div>
 
+<!-- GEMINI -->
+<div class="appWindow" id="gemini">
+  <div class="header">Gemini</div>
+  <div class="back" onclick="closeApp('gemini')">Back</div>
+  <div class="phoneMakerLayout">
+    <div class="phoneMakerCard">
+      <h4>Gemini Assistant</h4>
+      <p style="font-size:13px;opacity:.85;line-height:1.4">Use real Gemini in your browser. Enter a prompt to prefill context, then continue in Gemini.</p>
+      <textarea id="geminiPromptHome" style="margin-top:8px;width:100%;min-height:120px;border-radius:10px;border:1px solid rgba(255,255,255,.15);padding:10px;background:#111827;color:#fff" placeholder="Ask Gemini anything..."></textarea>
+      <button class="designApply" onclick="openGeminiWithPrompt('home')">Open Gemini</button>
+    </div>
+    <div class="phoneMakerCard">
+      <h4>Status</h4>
+      <div id="geminiStatusHome" class="robloxNowPlaying">Ready.</div>
+      <button class="wallBtn" onclick="openGeminiHome()">Open Gemini Home</button>
+    </div>
+  </div>
+</div>
 
 <div id="homebar"></div>
 
@@ -942,6 +982,7 @@ const winMaps=document.getElementById("winMaps");
 const winMinecraft=document.getElementById("winMinecraft");
 const winRoblox=document.getElementById("winRoblox");
 const winPhoneMaker=document.getElementById("winPhoneMaker");
+const winGemini=document.getElementById("winGemini");
 const phoneElement=document.getElementById("phone");
 const screenElement=document.getElementById("screen");
 const noteArea = document.getElementById("noteArea");
@@ -972,7 +1013,7 @@ function closeWindows11(){
   windows11.style.display="none";
 }
 function openWindowsApp(app){
-  const views = [winEdge, winCamera, winYouTube, winSettings, winNotes, winMaps, winMinecraft, winRoblox, winPhoneMaker];
+  const views = [winEdge, winCamera, winYouTube, winSettings, winNotes, winMaps, winMinecraft, winRoblox, winPhoneMaker, winGemini];
   views.forEach(v=>v.classList.remove("active"));
   winAppPane.style.display="flex";
   switch(app){
@@ -1015,6 +1056,10 @@ function openWindowsApp(app){
       winAppTitle.innerText = 'Phone Maker';
       winPhoneMaker.classList.add("active");
       syncPhoneMakerPreviews();
+      return;
+    case 'gemini':
+      winAppTitle.innerText = 'Gemini';
+      winGemini.classList.add("active");
       return;
     case 'start':
     default:
@@ -1566,6 +1611,28 @@ async function doSearch(){
   return _origDoSearch();
 }
 
+
+function openGeminiHome(){
+  window.open('https://gemini.google.com/app', '_blank');
+  updateGeminiStatus('Opened Gemini home.');
+}
+function openGeminiWithPrompt(scope='home'){
+  const input = scope === 'win' ? document.getElementById('geminiPromptWin') : document.getElementById('geminiPromptHome');
+  const prompt = input ? input.value.trim() : '';
+  let url = 'https://gemini.google.com/app';
+  if(prompt){
+    url += '?q=' + encodeURIComponent(prompt);
+  }
+  window.open(url, '_blank');
+  updateGeminiStatus(prompt ? 'Opened Gemini with your prompt.' : 'Opened Gemini.');
+}
+function updateGeminiStatus(text){
+  const a=document.getElementById('geminiStatusHome');
+  const b=document.getElementById('geminiStatusWin');
+  if(a) a.innerText=text;
+  if(b) b.innerText=text;
+}
+
 syncPhoneMakerPreviews();
 
 /* CALC */
@@ -1605,6 +1672,8 @@ window.setPhoneWallpaper = setPhoneWallpaper;
 window.applyPhoneDesign = applyPhoneDesign;
 window.selectRobloxCharacter = selectRobloxCharacter;
 window.playRobloxGame = playRobloxGame;
+window.openGeminiHome = openGeminiHome;
+window.openGeminiWithPrompt = openGeminiWithPrompt;
 
 </script>
 </body>
