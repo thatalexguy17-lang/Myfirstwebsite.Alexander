@@ -783,14 +783,15 @@ input,textarea,button{
           <div class="phoneMakerLayout">
             <div class="phoneMakerCard">
               <h4>Gemini Assistant</h4>
-              <p style="font-size:13px;opacity:.85;line-height:1.4">Type a prompt and launch Gemini in a new tab. It opens the official Gemini app so it works reliably.</p>
+              <p style="font-size:13px;opacity:.85;line-height:1.4">Use Gemini directly inside this website view. If your browser blocks embedding, use open in new tab.</p>
               <textarea id="geminiPromptWin" style="margin-top:8px;width:100%;min-height:120px;border-radius:10px;border:1px solid rgba(255,255,255,.15);padding:10px;background:#111827;color:#fff" placeholder="Ask Gemini anything..."></textarea>
-              <button class="designApply" onclick="openGeminiWithPrompt('win')">Open Gemini</button>
+              <button class="designApply" onclick="openGeminiWithPrompt('win')">Load Gemini Here</button>
+              <button class="wallBtn" onclick="openGeminiHome()">Open Gemini in New Tab</button>
             </div>
-            <div class="phoneMakerCard">
+            <div class="phoneMakerCard" style="display:flex;flex-direction:column">
               <h4>Status</h4>
               <div id="geminiStatusWin" class="robloxNowPlaying">Ready.</div>
-              <button class="wallBtn" onclick="openGeminiHome()">Open Gemini Home</button>
+              <iframe id="geminiFrameWin" style="margin-top:8px;flex:1;border:none;border-radius:10px;background:#fff" title="Gemini Web View"></iframe>
             </div>
           </div>
         </div>
@@ -936,14 +937,15 @@ input,textarea,button{
   <div class="phoneMakerLayout">
     <div class="phoneMakerCard">
       <h4>Gemini Assistant</h4>
-      <p style="font-size:13px;opacity:.85;line-height:1.4">Use real Gemini in your browser. Enter a prompt to prefill context, then continue in Gemini.</p>
+      <p style="font-size:13px;opacity:.85;line-height:1.4">Load Gemini directly inside this app. If your browser blocks embeds, open in new tab.</p>
       <textarea id="geminiPromptHome" style="margin-top:8px;width:100%;min-height:120px;border-radius:10px;border:1px solid rgba(255,255,255,.15);padding:10px;background:#111827;color:#fff" placeholder="Ask Gemini anything..."></textarea>
-      <button class="designApply" onclick="openGeminiWithPrompt('home')">Open Gemini</button>
+      <button class="designApply" onclick="openGeminiWithPrompt('home')">Load Gemini Here</button>
+      <button class="wallBtn" onclick="openGeminiHome()">Open Gemini in New Tab</button>
     </div>
-    <div class="phoneMakerCard">
+    <div class="phoneMakerCard" style="display:flex;flex-direction:column">
       <h4>Status</h4>
       <div id="geminiStatusHome" class="robloxNowPlaying">Ready.</div>
-      <button class="wallBtn" onclick="openGeminiHome()">Open Gemini Home</button>
+      <iframe id="geminiFrameHome" style="margin-top:8px;flex:1;border:none;border-radius:10px;background:#fff" title="Gemini Web View"></iframe>
     </div>
   </div>
 </div>
@@ -1613,18 +1615,24 @@ async function doSearch(){
 
 
 function openGeminiHome(){
-  window.open('https://gemini.google.com/app', '_blank');
-  updateGeminiStatus('Opened Gemini home.');
+  const url = 'https://gemini.google.com/app';
+  loadGeminiFrame('home', url);
+  loadGeminiFrame('win', url);
+  window.open(url, '_blank');
+  updateGeminiStatus('Gemini loaded in app and opened in new tab.');
 }
 function openGeminiWithPrompt(scope='home'){
   const input = scope === 'win' ? document.getElementById('geminiPromptWin') : document.getElementById('geminiPromptHome');
   const prompt = input ? input.value.trim() : '';
   let url = 'https://gemini.google.com/app';
-  if(prompt){
-    url += '?q=' + encodeURIComponent(prompt);
-  }
-  window.open(url, '_blank');
-  updateGeminiStatus(prompt ? 'Opened Gemini with your prompt.' : 'Opened Gemini.');
+  if(prompt) url += '?q=' + encodeURIComponent(prompt);
+  loadGeminiFrame(scope, url);
+  updateGeminiStatus(prompt ? 'Loaded Gemini with your prompt.' : 'Loaded Gemini.');
+}
+function loadGeminiFrame(scope, url){
+  const frame = scope === 'win' ? document.getElementById('geminiFrameWin') : document.getElementById('geminiFrameHome');
+  if(!frame) return;
+  frame.src = url;
 }
 function updateGeminiStatus(text){
   const a=document.getElementById('geminiStatusHome');
