@@ -193,6 +193,7 @@ body::before{
   display:flex;
   flex-direction:column;
   background:radial-gradient(circle at top,#2a63ff 0,#0a1838 45%,#05050b 100%);
+  position:relative;
 }
 .winHeader{
   padding:10px 16px;
@@ -241,6 +242,51 @@ body::before{
   width:44px;height:44px;
   border-radius:14px;
   font-size:20px;
+}
+.winAppPane{
+  position:absolute;
+  inset:64px 16px 72px;
+  background:rgba(10,16,32,.92);
+  border-radius:18px;
+  display:none;
+  flex-direction:column;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.08);
+}
+.winAppHeader{
+  padding:10px 14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:rgba(255,255,255,.08);
+  color:#f5f7ff;
+  font-weight:600;
+}
+.winAppHeader button{
+  border:none;
+  background:rgba(255,255,255,.2);
+  color:#fff;
+  border-radius:10px;
+  padding:4px 10px;
+  cursor:pointer;
+}
+.winAppContent{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+.winAppView{
+  flex:1;
+  display:none;
+}
+.winAppView.active{
+  display:flex;
+  flex-direction:column;
+}
+#windows11{
+  border-radius:40px;
+  overflow:hidden;
+  background:transparent;
 }
 .bootOverlay{
   position:absolute;
@@ -417,6 +463,44 @@ input,textarea,button{
         <span style="opacity:.7">Explore places</span>
       </div>
     </div>
+    <div class="winAppPane" id="winAppPane">
+      <div class="winAppHeader">
+        <span id="winAppTitle">App</span>
+        <button onclick="closeWinApp()">✕</button>
+      </div>
+      <div class="winAppContent">
+        <div class="winAppView" id="winEdge">
+          <div style="display:flex;gap:8px;padding:10px">
+            <input id="edgeInput" placeholder="Search or enter website" style="flex:1;padding:8px;border-radius:8px;border:1px solid #3b4a66;background:#0c1326;color:#fff">
+            <button onclick="searchEdge()" style="padding:8px 12px;border-radius:8px;border:none;background:#1b7dff;color:#fff;cursor:pointer">Go</button>
+          </div>
+          <iframe id="edgeFrame" style="flex:1;border:none;background:#000"></iframe>
+        </div>
+        <div class="winAppView" id="winCamera">
+          <video id="winCam" autoplay playsinline style="flex:1;background:#000"></video>
+        </div>
+        <div class="winAppView" id="winYouTube">
+          <iframe id="winTube" style="flex:1;border:none" allowfullscreen></iframe>
+        </div>
+        <div class="winAppView" id="winSettings">
+          <div style="padding:16px;color:#fff">
+            <h3 style="margin-bottom:10px">Settings</h3>
+            <ul style="list-style:none;display:grid;gap:8px;font-size:14px">
+              <li>Bluetooth • Connected</li>
+              <li>Wi‑Fi • Home Network</li>
+              <li>Display • 4K HDR</li>
+              <li>Personalization • Dark</li>
+            </ul>
+          </div>
+        </div>
+        <div class="winAppView" id="winNotes">
+          <textarea id="winNoteArea" style="flex:1;border:none;padding:15px;background:#0c1326;color:#fff">Windows notes…</textarea>
+        </div>
+        <div class="winAppView" id="winMaps">
+          <iframe id="winMapFrame" style="flex:1;border:none" src="https://www.openstreetmap.org/export/embed.html"></iframe>
+        </div>
+      </div>
+    </div>
     <div class="winTaskbar">
       <div class="icon windows" onclick="openWindowsApp('start')" style="cursor:pointer">🪟</div>
       <div class="icon edge" onclick="openWindowsApp('edge')" style="cursor:pointer">🌐</div>
@@ -498,6 +582,18 @@ const safariInput=document.getElementById("safariInput");
 const safariFrame=document.getElementById("safariFrame");
 const windows11=document.getElementById("windows11");
 const bootOverlay=document.getElementById("bootOverlay");
+const winAppPane=document.getElementById("winAppPane");
+const winAppTitle=document.getElementById("winAppTitle");
+const winEdge=document.getElementById("winEdge");
+const edgeInput=document.getElementById("edgeInput");
+const edgeFrame=document.getElementById("edgeFrame");
+const winCamera=document.getElementById("winCamera");
+const winCam=document.getElementById("winCam");
+const winYouTube=document.getElementById("winYouTube");
+const winTube=document.getElementById("winTube");
+const winSettings=document.getElementById("winSettings");
+const winNotes=document.getElementById("winNotes");
+const winMaps=document.getElementById("winMaps");
 const noteArea = document.getElementById("noteArea");
 
 // Solar system state
@@ -522,38 +618,76 @@ function openWindows11(){
   setTimeout(()=>{ bootOverlay.style.display="none"; },1800);
 }
 function closeWindows11(){
+  closeWinApp();
   windows11.style.display="none";
 }
 function openWindowsApp(app){
+  const views = [winEdge, winCamera, winYouTube, winSettings, winNotes, winMaps];
+  views.forEach(v=>v.classList.remove("active"));
+  winAppPane.style.display="flex";
   switch(app){
     case 'edge':
-      closeWindows11();
-      openSafariApp();
+      winAppTitle.innerText = 'Edge';
+      winEdge.classList.add("active");
+      setTimeout(()=>edgeInput.focus(),50);
       return;
     case 'camera':
-      closeWindows11();
-      openCamera();
+      winAppTitle.innerText = 'Camera';
+      winCamera.classList.add("active");
+      startWinCamera();
       return;
     case 'youtube':
-      openYouTube();
+      winAppTitle.innerText = 'YouTube';
+      winYouTube.classList.add("active");
+      winTube.src = "https://www.youtube.com/embed?autoplay=0";
       return;
     case 'settings':
-      closeWindows11();
-      openApp('settings');
+      winAppTitle.innerText = 'Settings';
+      winSettings.classList.add("active");
       return;
     case 'notes':
-      closeWindows11();
-      openApp('notes');
+      winAppTitle.innerText = 'Notes';
+      winNotes.classList.add("active");
       return;
     case 'maps':
-      closeWindows11();
-      openMap();
+      winAppTitle.innerText = 'Maps';
+      winMaps.classList.add("active");
       return;
     case 'start':
     default:
+      winAppPane.style.display="none";
       bootOverlay.style.display="flex";
       setTimeout(()=>{ bootOverlay.style.display="none"; },1200);
   }
+}
+function closeWinApp(){
+  winAppPane.style.display="none";
+  stopWinCamera();
+  winTube.src = "";
+}
+function searchEdge(){
+  let v=edgeInput.value.trim();
+  if(!v) return;
+  if(!v.includes(".")) edgeFrame.src="https://duckduckgo.com/html/?q="+encodeURIComponent(v);
+  else{
+    if(!v.startsWith("http")) v="https://"+v;
+    edgeFrame.src=v;
+  }
+}
+let winStream = null;
+function startWinCamera(){
+  if(winStream) return;
+  navigator.mediaDevices.getUserMedia({video:true}).then(s=>{
+    winStream=s;
+    winCam.srcObject=s;
+  }).catch(e=>console.error('Windows camera error', e));
+}
+function stopWinCamera(){
+  if(winStream){
+    winStream.getTracks().forEach(t=>t.stop());
+    winStream = null;
+  }
+  if(winCam) winCam.srcObject = null;
 }
 
 /* TIME */
@@ -590,6 +724,12 @@ document.addEventListener("keydown",e=>{
       window.open(v,"_blank");
     else safariFrame.src=v;
   }
+});
+document.addEventListener("keydown",e=>{
+  if(winAppPane.style.display!=="flex")return;
+  if(document.activeElement!==edgeInput)return;
+  if(e.key!=="Enter")return;
+  searchEdge();
 });
 
 /* YOUTUBE */
@@ -1011,6 +1151,8 @@ window.openYouTube = openYouTube;
 window.openWindows11 = openWindows11;
 window.closeWindows11 = closeWindows11;
 window.openWindowsApp = openWindowsApp;
+window.closeWinApp = closeWinApp;
+window.searchEdge = searchEdge;
 window.startFaceID = startFaceID;
 window.stopFaceID = stopFaceID;
 window.openSolarSystem = openSolarSystem;
