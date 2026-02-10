@@ -151,6 +151,7 @@ body::before{
 .edge{background:linear-gradient(135deg,#0aa0ff,#00ffb3)}
 .winCamera{background:linear-gradient(135deg,#1f1f1f,#4b4b4b)}
 .winYouTube{background:linear-gradient(135deg,#ff2f2f,#b10000)}
+.roblox{background:linear-gradient(135deg,#202020,#555)}
 .widgetRow{
   display:flex;
   gap:16px;
@@ -339,6 +340,91 @@ body::before{
   50%{transform:rotateX(30deg) rotateY(180deg);}
   100%{transform:rotateX(20deg) rotateY(360deg);}
 }
+.robloxLayout{
+  flex:1;
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:14px;
+  padding:14px;
+  background:linear-gradient(180deg,#101116,#0a0a0e);
+}
+.robloxPanel{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  padding:12px;
+  color:#fff;
+}
+.robloxPanel h4{
+  margin-bottom:10px;
+  font-size:13px;
+  opacity:.9;
+  letter-spacing:.3px;
+}
+.robloxCharacters{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.robloxCharacter{
+  background:#1a1d29;
+  border-radius:10px;
+  padding:8px;
+  text-align:center;
+  cursor:pointer;
+  border:1px solid transparent;
+}
+.robloxCharacter.active{
+  border-color:#3ca0ff;
+  box-shadow:0 0 0 2px rgba(60,160,255,.2);
+}
+.avatar3d{
+  width:100%;
+  aspect-ratio:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  perspective:700px;
+}
+.avatar3d .avatarBody{
+  width:34px;
+  height:34px;
+  background:linear-gradient(145deg,#68b7ff,#2f6cd4);
+  transform-style:preserve-3d;
+  transform:rotateX(20deg) rotateY(35deg);
+  position:relative;
+  animation:avatarSpin 6s linear infinite;
+}
+.avatar3d .avatarBody::before,
+.avatar3d .avatarBody::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:inherit;
+}
+.avatar3d .avatarBody::before{transform:rotateY(90deg) translateZ(17px);}
+.avatar3d .avatarBody::after{transform:rotateX(90deg) translateZ(17px);}
+.robloxCharacter:nth-child(2) .avatarBody{background:linear-gradient(145deg,#ff9f63,#d2502f)}
+.robloxCharacter:nth-child(3) .avatarBody{background:linear-gradient(145deg,#98ff8a,#2f9c49)}
+@keyframes avatarSpin{to{transform:rotateX(20deg) rotateY(395deg);}}
+.robloxGames{
+  display:grid;
+  gap:8px;
+}
+.robloxGameBtn{
+  border:none;
+  background:linear-gradient(90deg,#1f2435,#30374f);
+  color:#fff;
+  border-radius:10px;
+  padding:10px;
+  text-align:left;
+  cursor:pointer;
+}
+.robloxNowPlaying{
+  margin-top:10px;
+  font-size:12px;
+  opacity:.8;
+}
 .bootOverlay{
   position:absolute;
   inset:0;
@@ -436,6 +522,7 @@ input,textarea,button{
       <div class="app" onclick="openCamera()"><div class="icon camera">📷</div>Camera</div>
       <div class="app" onclick="openWindows11()"><div class="icon windows">🪟</div>Windows 11</div>
       <div class="app" onclick="openApp('minecraft')"><div class="icon calc">🧱</div>Minecraft</div>
+      <div class="app" onclick="openApp('roblox')"><div class="icon roblox">◧</div>Roblox</div>
       <div class="app" onclick="openSafariApp()"><div class="icon safari">🌐</div>Safari</div>
       <div class="app" onclick="openYouTube()"><div class="icon youtube">▶️</div>YouTube</div>
       <div class="app" onclick="openApp('calc')"><div class="icon calc">🧮</div>Calc</div>
@@ -481,7 +568,7 @@ input,textarea,button{
   <div class="winWrap">
     <div class="winHeader">
       <span>Windows 11</span>
-      <span style="font-size:12px;opacity:.7">Edge • Camera • YouTube</span>
+      <span style="font-size:12px;opacity:.7">Edge • Camera • YouTube • Roblox</span>
     </div>
     <div class="winDesktop">
       <div class="winTile" onclick="openWindowsApp('edge')" style="cursor:pointer">
@@ -518,6 +605,11 @@ input,textarea,button{
         <div class="icon calc">🧱</div>
         <strong>Minecraft 3D</strong>
         <span style="opacity:.7">Spin the block</span>
+      </div>
+      <div class="winTile" onclick="openWindowsApp('roblox')" style="cursor:pointer">
+        <div class="icon roblox">◧</div>
+        <strong>Roblox</strong>
+        <span style="opacity:.7">Avatars + Games</span>
       </div>
     </div>
     <div class="winAppPane" id="winAppPane">
@@ -568,6 +660,29 @@ input,textarea,button{
               <div class="minecraftFace left minecraftGrass"></div>
               <div class="minecraftFace top minecraftGrass"></div>
               <div class="minecraftFace bottom minecraftDirt"></div>
+            </div>
+          </div>
+        </div>
+        <div class="winAppView" id="winRoblox">
+          <div class="robloxLayout">
+            <div class="robloxPanel">
+              <h4>Choose 3D Character</h4>
+              <div class="robloxCharacters" id="robloxCharacters">
+                <div class="robloxCharacter active" onclick="selectRobloxCharacter(0)"><div class="avatar3d"><div class="avatarBody"></div></div><small>Builder</small></div>
+                <div class="robloxCharacter" onclick="selectRobloxCharacter(1)"><div class="avatar3d"><div class="avatarBody"></div></div><small>Runner</small></div>
+                <div class="robloxCharacter" onclick="selectRobloxCharacter(2)"><div class="avatar3d"><div class="avatarBody"></div></div><small>Wizard</small></div>
+              </div>
+              <div class="robloxNowPlaying" id="robloxSelected">Selected: Builder</div>
+            </div>
+            <div class="robloxPanel">
+              <h4>Games to Play</h4>
+              <div class="robloxGames">
+                <button class="robloxGameBtn" onclick="playRobloxGame('obby')">🏃 Speed Obby Challenge</button>
+                <button class="robloxGameBtn" onclick="playRobloxGame('tycoon')">🏭 Mega Factory Tycoon</button>
+                <button class="robloxGameBtn" onclick="playRobloxGame('sim')">🐾 Pet Simulator Galaxy</button>
+                <button class="robloxGameBtn" onclick="playRobloxGame('battle')">⚔️ Battle Arena Legends</button>
+              </div>
+              <div class="robloxNowPlaying" id="robloxGameStatus">No game launched yet.</div>
             </div>
           </div>
         </div>
@@ -651,6 +766,33 @@ input,textarea,button{
   </div>
 </div>
 
+<!-- ROBLOX -->
+<div class="appWindow" id="roblox">
+  <div class="header">Roblox</div>
+  <div class="back" onclick="closeApp('roblox')">Back</div>
+  <div class="robloxLayout">
+    <div class="robloxPanel">
+      <h4>Choose 3D Character</h4>
+      <div class="robloxCharacters" id="robloxCharactersHome">
+        <div class="robloxCharacter active" onclick="selectRobloxCharacter(0,'home')"><div class="avatar3d"><div class="avatarBody"></div></div><small>Builder</small></div>
+        <div class="robloxCharacter" onclick="selectRobloxCharacter(1,'home')"><div class="avatar3d"><div class="avatarBody"></div></div><small>Runner</small></div>
+        <div class="robloxCharacter" onclick="selectRobloxCharacter(2,'home')"><div class="avatar3d"><div class="avatarBody"></div></div><small>Wizard</small></div>
+      </div>
+      <div class="robloxNowPlaying" id="robloxSelectedHome">Selected: Builder</div>
+    </div>
+    <div class="robloxPanel">
+      <h4>Games to Play</h4>
+      <div class="robloxGames">
+        <button class="robloxGameBtn" onclick="playRobloxGame('obby')">🏃 Speed Obby Challenge</button>
+        <button class="robloxGameBtn" onclick="playRobloxGame('tycoon')">🏭 Mega Factory Tycoon</button>
+        <button class="robloxGameBtn" onclick="playRobloxGame('sim')">🐾 Pet Simulator Galaxy</button>
+        <button class="robloxGameBtn" onclick="playRobloxGame('battle')">⚔️ Battle Arena Legends</button>
+      </div>
+      <div class="robloxNowPlaying" id="robloxGameStatusHome">No game launched yet.</div>
+    </div>
+  </div>
+</div>
+
 <div id="homebar"></div>
 
 </div></div>
@@ -683,6 +825,7 @@ const winSettings=document.getElementById("winSettings");
 const winNotes=document.getElementById("winNotes");
 const winMaps=document.getElementById("winMaps");
 const winMinecraft=document.getElementById("winMinecraft");
+const winRoblox=document.getElementById("winRoblox");
 const noteArea = document.getElementById("noteArea");
 
 // Solar system state
@@ -711,7 +854,7 @@ function closeWindows11(){
   windows11.style.display="none";
 }
 function openWindowsApp(app){
-  const views = [winEdge, winCamera, winYouTube, winSettings, winNotes, winMaps, winMinecraft];
+  const views = [winEdge, winCamera, winYouTube, winSettings, winNotes, winMaps, winMinecraft, winRoblox];
   views.forEach(v=>v.classList.remove("active"));
   winAppPane.style.display="flex";
   switch(app){
@@ -745,6 +888,10 @@ function openWindowsApp(app){
     case 'minecraft':
       winAppTitle.innerText = 'Minecraft 3D';
       winMinecraft.classList.add("active");
+      return;
+    case 'roblox':
+      winAppTitle.innerText = 'Roblox';
+      winRoblox.classList.add("active");
       return;
     case 'start':
     default:
@@ -781,6 +928,38 @@ function stopWinCamera(){
     winStream = null;
   }
   if(winCam) winCam.srcObject = null;
+}
+
+const robloxCharacters = ["Builder", "Runner", "Wizard"];
+function selectRobloxCharacter(index, scope='win'){
+  const root = scope === 'home' ? document.getElementById('robloxCharactersHome') : document.getElementById('robloxCharacters');
+  const selected = scope === 'home' ? document.getElementById('robloxSelectedHome') : document.getElementById('robloxSelected');
+  if(!root || !selected) return;
+  [...root.querySelectorAll('.robloxCharacter')].forEach((el,i)=>{
+    if(i===index) el.classList.add('active');
+    else el.classList.remove('active');
+  });
+  selected.innerText = `Selected: ${robloxCharacters[index]||robloxCharacters[0]}`;
+}
+
+function playRobloxGame(game){
+  const urls = {
+    obby:'https://www.roblox.com/discover/',
+    tycoon:'https://www.roblox.com/discover/',
+    sim:'https://www.roblox.com/discover/',
+    battle:'https://www.roblox.com/discover/'
+  };
+  const labels = {
+    obby:'Launching Speed Obby Challenge...',
+    tycoon:'Launching Mega Factory Tycoon...',
+    sim:'Launching Pet Simulator Galaxy...',
+    battle:'Launching Battle Arena Legends...'
+  };
+  const winStatus = document.getElementById('robloxGameStatus');
+  const homeStatus = document.getElementById('robloxGameStatusHome');
+  if(winStatus) winStatus.innerText = labels[game] || 'Launching game...';
+  if(homeStatus) homeStatus.innerText = labels[game] || 'Launching game...';
+  window.open(urls[game] || urls.obby, '_blank');
 }
 
 /* TIME */
