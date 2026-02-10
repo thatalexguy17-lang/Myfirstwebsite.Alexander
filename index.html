@@ -288,6 +288,57 @@ body::before{
   overflow:hidden;
   background:transparent;
 }
+.minecraftStage{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  perspective:900px;
+  background:linear-gradient(180deg,#0b1a2e,#09101f);
+}
+.minecraftCube{
+  width:140px;
+  height:140px;
+  position:relative;
+  transform-style:preserve-3d;
+  animation:spinCube 12s linear infinite;
+}
+.minecraftFace{
+  position:absolute;
+  width:140px;
+  height:140px;
+  background-size:24px 24px;
+  border:2px solid rgba(0,0,0,.2);
+}
+.minecraftGrass{
+  background-image:
+    linear-gradient(#2aa84a 0 35%, #7a4b2b 35% 100%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 24px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.08) 0 2px, transparent 2px 24px);
+}
+.minecraftDirt{
+  background-image:
+    linear-gradient(#7a4b2b, #5a351d),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 24px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.08) 0 2px, transparent 2px 24px);
+}
+.minecraftStone{
+  background-image:
+    linear-gradient(#8f99a4, #6b7480),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.06) 0 2px, transparent 2px 24px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.1) 0 2px, transparent 2px 24px);
+}
+.minecraftFace.front{transform:translateZ(70px);}
+.minecraftFace.back{transform:rotateY(180deg) translateZ(70px);}
+.minecraftFace.right{transform:rotateY(90deg) translateZ(70px);}
+.minecraftFace.left{transform:rotateY(-90deg) translateZ(70px);}
+.minecraftFace.top{transform:rotateX(90deg) translateZ(70px);}
+.minecraftFace.bottom{transform:rotateX(-90deg) translateZ(70px);}
+@keyframes spinCube{
+  0%{transform:rotateX(20deg) rotateY(0deg);}
+  50%{transform:rotateX(30deg) rotateY(180deg);}
+  100%{transform:rotateX(20deg) rotateY(360deg);}
+}
 .bootOverlay{
   position:absolute;
   inset:0;
@@ -378,16 +429,17 @@ input,textarea,button{
       <div style="font-size:12px;opacity:.7;margin-top:6px">2h 14m remaining</div>
     </div>
   </div>
-  <div class="apps">
-    <div class="app" onclick="openApp('settings')"><div class="icon settings">⚙️</div>Settings</div>
-    <div class="app" onclick="openMap()"><div class="icon safari">🗺️</div>Maps</div>
-    <div class="app" onclick="openApp('notes')"><div class="icon notes">📝</div>Notes</div>
-    <div class="app" onclick="openCamera()"><div class="icon camera">📷</div>Camera</div>
-    <div class="app" onclick="openWindows11()"><div class="icon windows">🪟</div>Windows 11</div>
-    <div class="app" onclick="openSafariApp()"><div class="icon safari">🌐</div>Safari</div>
-    <div class="app" onclick="openYouTube()"><div class="icon youtube">▶️</div>YouTube</div>
-    <div class="app" onclick="openApp('calc')"><div class="icon calc">🧮</div>Calc</div>
-    <div class="app" onclick="openApp('clockApp')"><div class="icon clock">⏰</div>Clock</div>
+    <div class="apps">
+      <div class="app" onclick="openApp('settings')"><div class="icon settings">⚙️</div>Settings</div>
+      <div class="app" onclick="openMap()"><div class="icon safari">🗺️</div>Maps</div>
+      <div class="app" onclick="openApp('notes')"><div class="icon notes">📝</div>Notes</div>
+      <div class="app" onclick="openCamera()"><div class="icon camera">📷</div>Camera</div>
+      <div class="app" onclick="openWindows11()"><div class="icon windows">🪟</div>Windows 11</div>
+      <div class="app" onclick="openApp('minecraft')"><div class="icon calc">🧱</div>Minecraft</div>
+      <div class="app" onclick="openSafariApp()"><div class="icon safari">🌐</div>Safari</div>
+      <div class="app" onclick="openYouTube()"><div class="icon youtube">▶️</div>YouTube</div>
+      <div class="app" onclick="openApp('calc')"><div class="icon calc">🧮</div>Calc</div>
+      <div class="app" onclick="openApp('clockApp')"><div class="icon clock">⏰</div>Clock</div>
   </div>
   <div class="dock">
     <div class="icon safari">🌐</div>
@@ -462,6 +514,11 @@ input,textarea,button{
         <strong>Maps</strong>
         <span style="opacity:.7">Explore places</span>
       </div>
+      <div class="winTile" onclick="openWindowsApp('minecraft')" style="cursor:pointer">
+        <div class="icon calc">🧱</div>
+        <strong>Minecraft 3D</strong>
+        <span style="opacity:.7">Spin the block</span>
+      </div>
     </div>
     <div class="winAppPane" id="winAppPane">
       <div class="winAppHeader">
@@ -480,7 +537,10 @@ input,textarea,button{
           <video id="winCam" autoplay playsinline style="flex:1;background:#000"></video>
         </div>
         <div class="winAppView" id="winYouTube">
-          <iframe id="winTube" style="flex:1;border:none" allowfullscreen></iframe>
+          <div style="padding:10px;display:flex;justify-content:flex-end">
+            <button onclick="openYouTube()" style="padding:8px 12px;border-radius:8px;border:none;background:#ff2f2f;color:#fff;cursor:pointer">Open in YouTube</button>
+          </div>
+          <iframe id="winTube" style="flex:1;border:none" allowfullscreen referrerpolicy="no-referrer-when-downgrade" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
         </div>
         <div class="winAppView" id="winSettings">
           <div style="padding:16px;color:#fff">
@@ -498,6 +558,18 @@ input,textarea,button{
         </div>
         <div class="winAppView" id="winMaps">
           <iframe id="winMapFrame" style="flex:1;border:none" src="https://www.openstreetmap.org/export/embed.html"></iframe>
+        </div>
+        <div class="winAppView" id="winMinecraft">
+          <div class="minecraftStage">
+            <div class="minecraftCube">
+              <div class="minecraftFace front minecraftGrass"></div>
+              <div class="minecraftFace back minecraftGrass"></div>
+              <div class="minecraftFace right minecraftGrass"></div>
+              <div class="minecraftFace left minecraftGrass"></div>
+              <div class="minecraftFace top minecraftGrass"></div>
+              <div class="minecraftFace bottom minecraftDirt"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -563,6 +635,22 @@ input,textarea,button{
   <video id="cam" autoplay style="flex:1;background:black"></video>
 </div>
 
+<!-- MINECRAFT -->
+<div class="appWindow" id="minecraft">
+  <div class="header">Minecraft 3D</div>
+  <div class="back" onclick="closeApp('minecraft')">Back</div>
+  <div class="minecraftStage">
+    <div class="minecraftCube">
+      <div class="minecraftFace front minecraftGrass"></div>
+      <div class="minecraftFace back minecraftGrass"></div>
+      <div class="minecraftFace right minecraftStone"></div>
+      <div class="minecraftFace left minecraftStone"></div>
+      <div class="minecraftFace top minecraftGrass"></div>
+      <div class="minecraftFace bottom minecraftDirt"></div>
+    </div>
+  </div>
+</div>
+
 <div id="homebar"></div>
 
 </div></div>
@@ -594,6 +682,7 @@ const winTube=document.getElementById("winTube");
 const winSettings=document.getElementById("winSettings");
 const winNotes=document.getElementById("winNotes");
 const winMaps=document.getElementById("winMaps");
+const winMinecraft=document.getElementById("winMinecraft");
 const noteArea = document.getElementById("noteArea");
 
 // Solar system state
@@ -622,7 +711,7 @@ function closeWindows11(){
   windows11.style.display="none";
 }
 function openWindowsApp(app){
-  const views = [winEdge, winCamera, winYouTube, winSettings, winNotes, winMaps];
+  const views = [winEdge, winCamera, winYouTube, winSettings, winNotes, winMaps, winMinecraft];
   views.forEach(v=>v.classList.remove("active"));
   winAppPane.style.display="flex";
   switch(app){
@@ -639,7 +728,7 @@ function openWindowsApp(app){
     case 'youtube':
       winAppTitle.innerText = 'YouTube';
       winYouTube.classList.add("active");
-      winTube.src = "https://www.youtube.com/embed?autoplay=0";
+      winTube.src = "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0";
       return;
     case 'settings':
       winAppTitle.innerText = 'Settings';
@@ -652,6 +741,10 @@ function openWindowsApp(app){
     case 'maps':
       winAppTitle.innerText = 'Maps';
       winMaps.classList.add("active");
+      return;
+    case 'minecraft':
+      winAppTitle.innerText = 'Minecraft 3D';
+      winMinecraft.classList.add("active");
       return;
     case 'start':
     default:
