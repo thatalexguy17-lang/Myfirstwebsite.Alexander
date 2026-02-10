@@ -152,6 +152,7 @@ body::before{
 .winCamera{background:linear-gradient(135deg,#1f1f1f,#4b4b4b)}
 .winYouTube{background:linear-gradient(135deg,#ff2f2f,#b10000)}
 .roblox{background:linear-gradient(135deg,#202020,#555)}
+.phonemaker{background:linear-gradient(135deg,#7b61ff,#29d3ff)}
 .widgetRow{
   display:flex;
   gap:16px;
@@ -425,6 +426,60 @@ body::before{
   font-size:12px;
   opacity:.8;
 }
+.phoneMakerLayout{
+  flex:1;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  padding:14px;
+  background:linear-gradient(180deg,#111427,#090b14);
+  color:#fff;
+}
+.phoneMakerCard{
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;
+  padding:12px;
+}
+.phoneMakerSwatches{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+.swatch{
+  width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.55);cursor:pointer;
+}
+.wallBtn{
+  width:100%;
+  margin-top:8px;
+  border:none;
+  border-radius:10px;
+  padding:8px;
+  color:#fff;
+  cursor:pointer;
+  background:linear-gradient(90deg,#28314f,#43507d);
+}
+.phonePreviewMini{
+  width:90px;height:170px;border-radius:24px;padding:6px;margin:10px auto 0;
+  background:#050505;
+  box-shadow:0 8px 20px rgba(0,0,0,.35);
+}
+.phonePreviewMiniScreen{
+  width:100%;height:100%;border-radius:18px;
+  background:linear-gradient(140deg,#0b0f2a,#1f0f2b 55%,#0b1b2a);
+}
+.designApply{
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  padding:9px 10px;
+  width:100%;
+  cursor:pointer;
+  background:linear-gradient(90deg,#2ecc71,#27ae60);
+  color:#052;
+  font-weight:700;
+}
 .bootOverlay{
   position:absolute;
   inset:0;
@@ -523,6 +578,7 @@ input,textarea,button{
       <div class="app" onclick="openWindows11()"><div class="icon windows">🪟</div>Windows 11</div>
       <div class="app" onclick="openApp('minecraft')"><div class="icon calc">🧱</div>Minecraft</div>
       <div class="app" onclick="openApp('roblox')"><div class="icon roblox">◧</div>Roblox</div>
+      <div class="app" onclick="openApp('phoneMaker')"><div class="icon phonemaker">🎨</div>Phone Maker</div>
       <div class="app" onclick="openSafariApp()"><div class="icon safari">🌐</div>Safari</div>
       <div class="app" onclick="openYouTube()"><div class="icon youtube">▶️</div>YouTube</div>
       <div class="app" onclick="openApp('calc')"><div class="icon calc">🧮</div>Calc</div>
@@ -611,6 +667,11 @@ input,textarea,button{
         <strong>Roblox</strong>
         <span style="opacity:.7">Avatars + Games</span>
       </div>
+      <div class="winTile" onclick="openWindowsApp('phoneMaker')" style="cursor:pointer">
+        <div class="icon phonemaker">🎨</div>
+        <strong>Phone Maker</strong>
+        <span style="opacity:.7">Design your phone</span>
+      </div>
     </div>
     <div class="winAppPane" id="winAppPane">
       <div class="winAppHeader">
@@ -683,6 +744,31 @@ input,textarea,button{
                 <button class="robloxGameBtn" onclick="playRobloxGame('battle')">⚔️ Battle Arena Legends</button>
               </div>
               <div class="robloxNowPlaying" id="robloxGameStatus">No game launched yet.</div>
+            </div>
+          </div>
+        </div>
+        <div class="winAppView" id="winPhoneMaker">
+          <div class="phoneMakerLayout">
+            <div class="phoneMakerCard">
+              <h4>Body Color</h4>
+              <div class="phoneMakerSwatches">
+                <button class="swatch" style="background:#050505" onclick="setPhoneColor('#050505')"></button>
+                <button class="swatch" style="background:#1f2940" onclick="setPhoneColor('#1f2940')"></button>
+                <button class="swatch" style="background:#3e1d52" onclick="setPhoneColor('#3e1d52')"></button>
+                <button class="swatch" style="background:#3f2b1f" onclick="setPhoneColor('#3f2b1f')"></button>
+              </div>
+              <h4 style="margin-top:10px">Wallpaper</h4>
+              <button class="wallBtn" onclick="setPhoneWallpaper('nebula')">Nebula</button>
+              <button class="wallBtn" onclick="setPhoneWallpaper('sunset')">Sunset</button>
+              <button class="wallBtn" onclick="setPhoneWallpaper('matrix')">Matrix</button>
+            </div>
+            <div class="phoneMakerCard">
+              <h4>Preview</h4>
+              <div class="phonePreviewMini" id="phonePreviewMini">
+                <div class="phonePreviewMiniScreen" id="phonePreviewMiniScreen"></div>
+              </div>
+              <div class="robloxNowPlaying" id="winPhoneMakerStatus">Ready to design.</div>
+              <button class="designApply" onclick="applyPhoneDesign()">Apply & Use Phone</button>
             </div>
           </div>
         </div>
@@ -792,6 +878,35 @@ input,textarea,button{
     </div>
   </div>
 </div>
+<!-- PHONE MAKER -->
+<div class="appWindow" id="phoneMaker">
+  <div class="header">Phone Maker</div>
+  <div class="back" onclick="closeApp('phoneMaker')">Back</div>
+  <div class="phoneMakerLayout">
+    <div class="phoneMakerCard">
+      <h4>Body Color</h4>
+      <div class="phoneMakerSwatches">
+        <button class="swatch" style="background:#050505" onclick="setPhoneColor('#050505')"></button>
+        <button class="swatch" style="background:#1f2940" onclick="setPhoneColor('#1f2940')"></button>
+        <button class="swatch" style="background:#3e1d52" onclick="setPhoneColor('#3e1d52')"></button>
+        <button class="swatch" style="background:#3f2b1f" onclick="setPhoneColor('#3f2b1f')"></button>
+      </div>
+      <h4 style="margin-top:10px">Wallpaper</h4>
+      <button class="wallBtn" onclick="setPhoneWallpaper('nebula')">Nebula</button>
+      <button class="wallBtn" onclick="setPhoneWallpaper('sunset')">Sunset</button>
+      <button class="wallBtn" onclick="setPhoneWallpaper('matrix')">Matrix</button>
+    </div>
+    <div class="phoneMakerCard">
+      <h4>Preview</h4>
+      <div class="phonePreviewMini" id="phonePreviewMiniHome">
+        <div class="phonePreviewMiniScreen" id="phonePreviewMiniScreenHome"></div>
+      </div>
+      <div class="robloxNowPlaying" id="phoneMakerStatus">Ready to design.</div>
+      <button class="designApply" onclick="applyPhoneDesign()">Apply & Use Phone</button>
+    </div>
+  </div>
+</div>
+
 
 <div id="homebar"></div>
 
@@ -826,6 +941,9 @@ const winNotes=document.getElementById("winNotes");
 const winMaps=document.getElementById("winMaps");
 const winMinecraft=document.getElementById("winMinecraft");
 const winRoblox=document.getElementById("winRoblox");
+const winPhoneMaker=document.getElementById("winPhoneMaker");
+const phoneElement=document.getElementById("phone");
+const screenElement=document.getElementById("screen");
 const noteArea = document.getElementById("noteArea");
 
 // Solar system state
@@ -854,7 +972,7 @@ function closeWindows11(){
   windows11.style.display="none";
 }
 function openWindowsApp(app){
-  const views = [winEdge, winCamera, winYouTube, winSettings, winNotes, winMaps, winMinecraft, winRoblox];
+  const views = [winEdge, winCamera, winYouTube, winSettings, winNotes, winMaps, winMinecraft, winRoblox, winPhoneMaker];
   views.forEach(v=>v.classList.remove("active"));
   winAppPane.style.display="flex";
   switch(app){
@@ -893,6 +1011,11 @@ function openWindowsApp(app){
       winAppTitle.innerText = 'Roblox';
       winRoblox.classList.add("active");
       return;
+    case 'phoneMaker':
+      winAppTitle.innerText = 'Phone Maker';
+      winPhoneMaker.classList.add("active");
+      syncPhoneMakerPreviews();
+      return;
     case 'start':
     default:
       winAppPane.style.display="none";
@@ -928,6 +1051,44 @@ function stopWinCamera(){
     winStream = null;
   }
   if(winCam) winCam.srcObject = null;
+}
+
+
+const phoneDesign = { color:'#050505', wallpaper:'nebula' };
+function wallpaperByName(name){
+  if(name==='sunset') return 'linear-gradient(145deg,#3f1d4e,#ff6f61 55%,#ffbf69)';
+  if(name==='matrix') return 'linear-gradient(160deg,#02120a,#063b1f 55%,#0b2015)';
+  return 'linear-gradient(140deg,#0b0f2a,#1f0f2b 55%,#0b1b2a)';
+}
+function setPhoneColor(color){
+  phoneDesign.color = color;
+  syncPhoneMakerPreviews();
+  setDesignStatus('Body color selected.');
+}
+function setPhoneWallpaper(name){
+  phoneDesign.wallpaper = name;
+  syncPhoneMakerPreviews();
+  setDesignStatus('Wallpaper selected.');
+}
+function setDesignStatus(text){
+  const a=document.getElementById('phoneMakerStatus');
+  const b=document.getElementById('winPhoneMakerStatus');
+  if(a) a.innerText=text;
+  if(b) b.innerText=text;
+}
+function syncPhoneMakerPreviews(){
+  const p1=document.getElementById('phonePreviewMini');
+  const p2=document.getElementById('phonePreviewMiniHome');
+  const s1=document.getElementById('phonePreviewMiniScreen');
+  const s2=document.getElementById('phonePreviewMiniScreenHome');
+  [p1,p2].forEach(p=>{ if(p) p.style.background = phoneDesign.color; });
+  const wall = wallpaperByName(phoneDesign.wallpaper);
+  [s1,s2].forEach(s=>{ if(s) s.style.background = wall; });
+}
+function applyPhoneDesign(){
+  phoneElement.style.background = `linear-gradient(160deg,${phoneDesign.color},#050505)`;
+  screenElement.style.background = wallpaperByName(phoneDesign.wallpaper);
+  setDesignStatus('Design applied! Now use your custom phone.');
 }
 
 const robloxCharacters = ["Builder", "Runner", "Wizard"];
@@ -1405,6 +1566,8 @@ async function doSearch(){
   return _origDoSearch();
 }
 
+syncPhoneMakerPreviews();
+
 /* CALC */
 function press(v){calcDisplay.value+=v;}
 function calculate(){
@@ -1437,6 +1600,11 @@ window.doSearch = doSearch;
 window.geolocate = geolocate;
 window.toggleSatellite = toggleSatellite;
 window.toggleGoogle = toggleGoogle;
+window.setPhoneColor = setPhoneColor;
+window.setPhoneWallpaper = setPhoneWallpaper;
+window.applyPhoneDesign = applyPhoneDesign;
+window.selectRobloxCharacter = selectRobloxCharacter;
+window.playRobloxGame = playRobloxGame;
 
 </script>
 </body>
