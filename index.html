@@ -1,1688 +1,363 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>iOS Simulator – Giant Script</title>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-  background:radial-gradient(circle at top,#1b1f3b 0,#07070f 45%,#050505 100%);
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-family:-apple-system,BlinkMacSystemFont;
-  color:#fff;
-  overflow:hidden;
-}
-body::before{
-  content:"";
-  position:fixed;
-  inset:-40%;
-  background:
-    radial-gradient(circle at 20% 20%,rgba(88,194,255,.35),transparent 45%),
-    radial-gradient(circle at 80% 10%,rgba(255,124,226,.25),transparent 50%),
-    radial-gradient(circle at 50% 80%,rgba(128,255,197,.2),transparent 55%);
-  filter:blur(10px);
-  z-index:-1;
-}
-#phone{
-  width:392px;height:790px;
-  background:linear-gradient(160deg,#1a1a1a,#050505);
-  border-radius:52px;
-  padding:12px;
-  box-shadow:0 25px 80px rgba(0,0,0,.75),0 0 30px rgba(98,138,255,.2);
-  border:1px solid rgba(255,255,255,.1);
-  position:relative;
-}
-#phone::before{
-  content:"";
-  position:absolute;
-  inset:6px;
-  border-radius:46px;
-  border:1px solid rgba(255,255,255,.08);
-  pointer-events:none;
-}
-#screen{
-  width:100%;height:100%;
-  border-radius:40px;
-  overflow:hidden;position:relative;
-  background:
-    linear-gradient(145deg,rgba(0,0,0,.25),rgba(0,0,0,.7)),
-    radial-gradient(circle at 20% 20%,rgba(120,180,255,.5),transparent 55%),
-    radial-gradient(circle at 80% 10%,rgba(255,140,220,.35),transparent 50%),
-    radial-gradient(circle at 50% 80%,rgba(120,255,200,.3),transparent 55%),
-    linear-gradient(140deg,#0b0f2a,#1f0f2b 55%,#0b1b2a);
-}
-#screen::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(180deg,rgba(0,0,0,.5) 0,transparent 40%,rgba(0,0,0,.55) 100%);
-  pointer-events:none;
-  z-index:0;
-}
-#status{
-  height:40px;padding:10px 18px;
-  color:white;display:flex;
-  justify-content:space-between;
-  position:relative;
-  z-index:2;
-}
-#status::before{
-  content:"";
-  position:absolute;
-  top:6px;left:50%;
-  transform:translateX(-50%);
-  width:140px;height:26px;
-  border-radius:18px;
-  background:rgba(0,0,0,.6);
-  box-shadow:inset 0 0 6px rgba(255,255,255,.1);
-  z-index:-1;
-}
-#notch{
-  position:absolute;
-  top:10px;left:50%;
-  transform:translateX(-50%);
-  width:120px;height:22px;
-  background:#000;
-  border-radius:14px;
-  box-shadow:0 2px 8px rgba(0,0,0,.6);
-}
-#status span{
-  font-weight:600;
-  text-shadow:0 2px 4px rgba(0,0,0,.5);
-}
-#lock{
-  position:absolute;inset:0;
-  backdrop-filter:blur(30px) saturate(140%);
-  background:rgba(0,0,0,.35);
-  display:flex;flex-direction:column;
-  justify-content:center;align-items:center;
-  color:white;z-index:10;
-  gap:10px;
-  text-align:center;
-}
-#time{font-size:72px;font-weight:600;letter-spacing:2px}
-#date{
-  font-size:16px;
-  text-transform:uppercase;
-  letter-spacing:3px;
-  opacity:.85;
-}
-#lockHint{
-  margin-top:30px;
-  font-size:14px;
-  opacity:.7;
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-#home{display:none;padding:32px;position:relative;z-index:1}
-.apps{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:22px;
-}
-.app{
-  text-align:center;
-  color:white;
-  font-size:12px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-.icon{
-  width:64px;height:64px;
-  border-radius:18px;margin:auto;
-  display:flex;align-items:center;justify-content:center;
-  font-size:30px;color:white;
-  box-shadow:0 10px 20px rgba(0,0,0,.35),inset 0 0 8px rgba(255,255,255,.25);
-}
-.settings{background:linear-gradient(#aaa,#555)}
-.notes{background:linear-gradient(#ffd34d,#ffb700)}
-.camera{background:linear-gradient(#444,#000)}
-.safari{background:linear-gradient(#4db8ff,#0066ff)}
-.youtube{background:red}
-.calc{background:#333}
-.clock{background:black}
-.windows{background:linear-gradient(135deg,#1c7dff,#6fe2ff)}
-.edge{background:linear-gradient(135deg,#0aa0ff,#00ffb3)}
-.winCamera{background:linear-gradient(135deg,#1f1f1f,#4b4b4b)}
-.winYouTube{background:linear-gradient(135deg,#ff2f2f,#b10000)}
-.roblox{background:linear-gradient(135deg,#202020,#555)}
-.phonemaker{background:linear-gradient(135deg,#7b61ff,#29d3ff)}
-.gemini{background:linear-gradient(135deg,#4a8bff,#9f6bff)}
-.widgetRow{
-  display:flex;
-  gap:16px;
-  margin-bottom:24px;
-}
-.widget{
-  flex:1;
-  background:rgba(255,255,255,.12);
-  border-radius:20px;
-  padding:14px;
-  backdrop-filter:blur(10px);
-  box-shadow:inset 0 0 10px rgba(255,255,255,.08);
-}
-.widgetTitle{
-  font-size:12px;
-  letter-spacing:1px;
-  opacity:.7;
-  text-transform:uppercase;
-}
-.weather{
-  font-size:28px;
-  margin-top:8px;
-}
-.dock{
-  margin-top:28px;
-  background:rgba(0,0,0,.35);
-  border-radius:28px;
-  padding:14px 22px;
-  display:flex;
-  justify-content:space-between;
-  backdrop-filter:blur(18px);
-}
-.dock .icon{
-  width:54px;height:54px;
-  border-radius:16px;
-  font-size:26px;
-}
-.winWrap{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  background:radial-gradient(circle at top,#2a63ff 0,#0a1838 45%,#05050b 100%);
-  position:relative;
-}
-.winHeader{
-  padding:10px 16px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  color:#f5f7ff;
-  font-weight:600;
-  background:rgba(3,8,20,.6);
-  backdrop-filter:blur(10px);
-}
-.winDesktop{
-  flex:1;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:16px;
-  padding:24px;
-}
-.winTile{
-  background:rgba(255,255,255,.12);
-  border-radius:18px;
-  padding:16px;
-  color:white;
-  box-shadow:inset 0 0 10px rgba(255,255,255,.08);
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  align-items:flex-start;
-  font-size:13px;
-}
-.winTile .icon{
-  width:50px;height:50px;
-  border-radius:14px;
-  font-size:22px;
-}
-.winTaskbar{
-  height:56px;
-  background:rgba(12,16,32,.8);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  backdrop-filter:blur(14px);
-}
-.winTaskbar .icon{
-  width:44px;height:44px;
-  border-radius:14px;
-  font-size:20px;
-}
-.winAppPane{
-  position:absolute;
-  inset:64px 16px 72px;
-  background:rgba(10,16,32,.92);
-  border-radius:18px;
-  display:none;
-  flex-direction:column;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,.08);
-}
-.winAppHeader{
-  padding:10px 14px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:rgba(255,255,255,.08);
-  color:#f5f7ff;
-  font-weight:600;
-}
-.winAppHeader button{
-  border:none;
-  background:rgba(255,255,255,.2);
-  color:#fff;
-  border-radius:10px;
-  padding:4px 10px;
-  cursor:pointer;
-}
-.winAppContent{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-}
-.winAppView{
-  flex:1;
-  display:none;
-}
-.winAppView.active{
-  display:flex;
-  flex-direction:column;
-}
-#windows11{
-  border-radius:40px;
-  overflow:hidden;
-  background:transparent;
-}
-.minecraftStage{
-  flex:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  perspective:900px;
-  background:linear-gradient(180deg,#0b1a2e,#09101f);
-}
-.minecraftCube{
-  width:140px;
-  height:140px;
-  position:relative;
-  transform-style:preserve-3d;
-  animation:spinCube 12s linear infinite;
-}
-.minecraftFace{
-  position:absolute;
-  width:140px;
-  height:140px;
-  background-size:24px 24px;
-  border:2px solid rgba(0,0,0,.2);
-}
-.minecraftGrass{
-  background-image:
-    linear-gradient(#2aa84a 0 35%, #7a4b2b 35% 100%),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 24px),
-    repeating-linear-gradient(0deg, rgba(0,0,0,.08) 0 2px, transparent 2px 24px);
-}
-.minecraftDirt{
-  background-image:
-    linear-gradient(#7a4b2b, #5a351d),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 24px),
-    repeating-linear-gradient(0deg, rgba(0,0,0,.08) 0 2px, transparent 2px 24px);
-}
-.minecraftStone{
-  background-image:
-    linear-gradient(#8f99a4, #6b7480),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.06) 0 2px, transparent 2px 24px),
-    repeating-linear-gradient(0deg, rgba(0,0,0,.1) 0 2px, transparent 2px 24px);
-}
-.minecraftFace.front{transform:translateZ(70px);}
-.minecraftFace.back{transform:rotateY(180deg) translateZ(70px);}
-.minecraftFace.right{transform:rotateY(90deg) translateZ(70px);}
-.minecraftFace.left{transform:rotateY(-90deg) translateZ(70px);}
-.minecraftFace.top{transform:rotateX(90deg) translateZ(70px);}
-.minecraftFace.bottom{transform:rotateX(-90deg) translateZ(70px);}
-@keyframes spinCube{
-  0%{transform:rotateX(20deg) rotateY(0deg);}
-  50%{transform:rotateX(30deg) rotateY(180deg);}
-  100%{transform:rotateX(20deg) rotateY(360deg);}
-}
-.robloxLayout{
-  flex:1;
-  display:grid;
-  grid-template-columns:1.1fr .9fr;
-  gap:14px;
-  padding:14px;
-  background:linear-gradient(180deg,#101116,#0a0a0e);
-}
-.robloxPanel{
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:14px;
-  padding:12px;
-  color:#fff;
-}
-.robloxPanel h4{
-  margin-bottom:10px;
-  font-size:13px;
-  opacity:.9;
-  letter-spacing:.3px;
-}
-.robloxCharacters{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-}
-.robloxCharacter{
-  background:#1a1d29;
-  border-radius:10px;
-  padding:8px;
-  text-align:center;
-  cursor:pointer;
-  border:1px solid transparent;
-}
-.robloxCharacter.active{
-  border-color:#3ca0ff;
-  box-shadow:0 0 0 2px rgba(60,160,255,.2);
-}
-.avatar3d{
-  width:100%;
-  aspect-ratio:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  perspective:700px;
-}
-.avatar3d .avatarBody{
-  width:34px;
-  height:34px;
-  background:linear-gradient(145deg,#68b7ff,#2f6cd4);
-  transform-style:preserve-3d;
-  transform:rotateX(20deg) rotateY(35deg);
-  position:relative;
-  animation:avatarSpin 6s linear infinite;
-}
-.avatar3d .avatarBody::before,
-.avatar3d .avatarBody::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:inherit;
-}
-.avatar3d .avatarBody::before{transform:rotateY(90deg) translateZ(17px);}
-.avatar3d .avatarBody::after{transform:rotateX(90deg) translateZ(17px);}
-.robloxCharacter:nth-child(2) .avatarBody{background:linear-gradient(145deg,#ff9f63,#d2502f)}
-.robloxCharacter:nth-child(3) .avatarBody{background:linear-gradient(145deg,#98ff8a,#2f9c49)}
-@keyframes avatarSpin{to{transform:rotateX(20deg) rotateY(395deg);}}
-.robloxGames{
-  display:grid;
-  gap:8px;
-}
-.robloxGameBtn{
-  border:none;
-  background:linear-gradient(90deg,#1f2435,#30374f);
-  color:#fff;
-  border-radius:10px;
-  padding:10px;
-  text-align:left;
-  cursor:pointer;
-}
-.robloxNowPlaying{
-  margin-top:10px;
-  font-size:12px;
-  opacity:.8;
-}
-.phoneMakerLayout{
-  flex:1;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  padding:14px;
-  background:linear-gradient(180deg,#111427,#090b14);
-  color:#fff;
-}
-.phoneMakerCard{
-  background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:14px;
-  padding:12px;
-}
-.phoneMakerSwatches{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-top:8px;
-}
-.swatch{
-  width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.55);cursor:pointer;
-}
-.wallBtn{
-  width:100%;
-  margin-top:8px;
-  border:none;
-  border-radius:10px;
-  padding:8px;
-  color:#fff;
-  cursor:pointer;
-  background:linear-gradient(90deg,#28314f,#43507d);
-}
-.phonePreviewMini{
-  width:90px;height:170px;border-radius:24px;padding:6px;margin:10px auto 0;
-  background:#050505;
-  box-shadow:0 8px 20px rgba(0,0,0,.35);
-}
-.phonePreviewMiniScreen{
-  width:100%;height:100%;border-radius:18px;
-  background:linear-gradient(140deg,#0b0f2a,#1f0f2b 55%,#0b1b2a);
-}
-.designApply{
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
-  padding:9px 10px;
-  width:100%;
-  cursor:pointer;
-  background:linear-gradient(90deg,#2ecc71,#27ae60);
-  color:#052;
-  font-weight:700;
-}
-.bootOverlay{
-  position:absolute;
-  inset:0;
-  background:#020308;
-  color:#cfe3ff;
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:16px;
-  z-index:40;
-}
-.bootSpinner{
-  width:42px;height:42px;
-  border-radius:50%;
-  border:4px solid rgba(255,255,255,.15);
-  border-top-color:#5da8ff;
-  animation:spin 1s linear infinite;
-}
-@keyframes spin{
-  to{transform:rotate(360deg);}
-}
-
-.appWindow{
-  position:absolute;inset:0;
-  background:white;display:none;
-  flex-direction:column;z-index:20;
-}
-.header{
-  height:50px;background:#f2f2f2;
-  display:flex;align-items:center;
-  justify-content:center;font-weight:600;
-}
-.back{
-  position:absolute;left:10px;top:15px;
-  color:#007aff;cursor:pointer;
-}
-input,textarea,button{
-  font-size:16px;
-}
-#homebar{
-  position:absolute;bottom:8px;left:50%;
-  transform:translateX(-50%);
-  width:140px;height:5px;
-  background:rgba(255,255,255,.85);border-radius:5px;
-  box-shadow:0 4px 10px rgba(0,0,0,.4);
-}
-</style>
-</head>
-
-<body>
-<div id="phone"><div id="screen">
-
-<div id="status">
-  <span id="clock">9:41</span>
-  <span>📶 🔋</span>
-  <div id="notch"></div>
-</div>
-
-<div id="lock" onclick="unlock()">
-  <div id="time">9:41</div>
-  <div id="date">Friday • Dream Mode</div>
-  <div id="lockHint">Swipe up to unlock ✨</div>
-  <div id="faceControls" style="margin-top:12px">
-    <button id="faceBtn" onclick="startFaceID()" style="padding:8px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,#2ecc71,#27ae60);color:#021;cursor:pointer">Use Face ID</button>
-    <div id="faceStatus" style="margin-top:8px;opacity:.85;font-size:13px"></div>
-    <div id="faceOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);align-items:center;justify-content:center;z-index:50">
-      <div style="width:340px;height:520px;background:#000;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.6)">
-        <video id="faceVideo" autoplay playsinline style="flex:1;background:#000"></video>
-        <div style="padding:10px;display:flex;gap:8px;justify-content:center;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)">
-          <button onclick="stopFaceID()" style="padding:8px 12px;border-radius:10px;border:none;background:#fff;color:#111;cursor:pointer">Cancel</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="home">
-  <div class="widgetRow">
-    <div class="widget">
-      <div class="widgetTitle">Today</div>
-      <div class="weather">24° ☀️</div>
-      <div style="font-size:12px;opacity:.7">Feels like 26° • Clear</div>
-    </div>
-    <div class="widget">
-      <div class="widgetTitle">Focus</div>
-      <div style="font-size:20px;margin-top:10px">Deep Work</div>
-      <div style="font-size:12px;opacity:.7;margin-top:6px">2h 14m remaining</div>
-    </div>
-  </div>
-    <div class="apps">
-      <div class="app" onclick="openApp('settings')"><div class="icon settings">⚙️</div>Settings</div>
-      <div class="app" onclick="openMap()"><div class="icon safari">🗺️</div>Maps</div>
-      <div class="app" onclick="openApp('notes')"><div class="icon notes">📝</div>Notes</div>
-      <div class="app" onclick="openCamera()"><div class="icon camera">📷</div>Camera</div>
-      <div class="app" onclick="openWindows11()"><div class="icon windows">🪟</div>Windows 11</div>
-      <div class="app" onclick="openApp('minecraft')"><div class="icon calc">🧱</div>Minecraft</div>
-      <div class="app" onclick="openApp('roblox')"><div class="icon roblox">◧</div>Roblox</div>
-      <div class="app" onclick="openApp('phoneMaker')"><div class="icon phonemaker">🎨</div>Phone Maker</div>
-      <div class="app" onclick="openApp('gemini')"><div class="icon gemini">✦</div>Gemini</div>
-      <div class="app" onclick="openSafariApp()"><div class="icon safari">🌐</div>Safari</div>
-      <div class="app" onclick="openYouTube()"><div class="icon youtube">▶️</div>YouTube</div>
-      <div class="app" onclick="openApp('calc')"><div class="icon calc">🧮</div>Calc</div>
-      <div class="app" onclick="openApp('clockApp')"><div class="icon clock">⏰</div>Clock</div>
-  </div>
-  <div class="dock">
-    <div class="icon safari">🌐</div>
-    <div class="icon notes">📝</div>
-    <div class="icon youtube">▶️</div>
-    <div class="icon settings">⚙️</div>
-  </div>
-</div>
-
-<!-- SETTINGS -->
-<div class="appWindow" id="settings">
-  <div class="header">Settings</div>
-  <div class="back" onclick="closeApp('settings')">Back</div>
-  <p style="padding:20px">Wi-Fi • Bluetooth • Display</p>
-</div>
-
-<!-- NOTES -->
-<div class="appWindow" id="notes">
-  <div class="header">Notes</div>
-  <div class="back" onclick="closeApp('notes')">Back</div>
-  <textarea id="noteArea" style="flex:1;border:none;padding:15px">My notes…</textarea>
-</div>
-
-<!-- SAFARI -->
-<div class="appWindow" id="safari">
-  <div class="header">Safari</div>
-  <div class="back" onclick="closeSafari()">Back</div>
-  <input id="safariInput" placeholder="Search or enter website"
-    style="margin:10px;padding:8px;border-radius:8px;border:1px solid #ccc">
-  <iframe id="safariFrame" style="flex:1;border:none"></iframe>
-</div>
-
-<!-- WINDOWS 11 -->
-<div class="appWindow" id="windows11">
-  <div class="bootOverlay" id="bootOverlay">
-    <div class="bootSpinner"></div>
-    <div>Rebooting to Windows 11...</div>
-  </div>
-  <div class="winWrap">
-    <div class="winHeader">
-      <span>Windows 11</span>
-      <span style="font-size:12px;opacity:.7">Edge • Camera • YouTube • Roblox • Gemini</span>
-    </div>
-    <div class="winDesktop">
-      <div class="winTile" onclick="openWindowsApp('edge')" style="cursor:pointer">
-        <div class="icon edge">🌐</div>
-        <strong>Edge</strong>
-        <span style="opacity:.7">Browse the web fast</span>
-      </div>
-      <div class="winTile" onclick="openWindowsApp('camera')" style="cursor:pointer">
-        <div class="icon winCamera">📷</div>
-        <strong>Camera</strong>
-        <span style="opacity:.7">Take a quick photo</span>
-      </div>
-      <div class="winTile" onclick="openWindowsApp('youtube')" style="cursor:pointer">
-        <div class="icon winYouTube">▶️</div>
-        <strong>YouTube</strong>
-        <span style="opacity:.7">Watch trending</span>
-      </div>
-      <div class="winTile" onclick="openWindowsApp('settings')" style="cursor:pointer">
-        <div class="icon settings">⚙️</div>
-        <strong>Settings</strong>
-        <span style="opacity:.7">Personalize</span>
-      </div>
-      <div class="winTile" onclick="openWindowsApp('notes')" style="cursor:pointer">
-        <div class="icon notes">📝</div>
-        <strong>Notes</strong>
-        <span style="opacity:.7">Quick ideas</span>
-      </div>
-      <div class="winTile" onclick="openWindowsApp('maps')" style="cursor:pointer">
-        <div class="icon safari">🗺️</div>
-        <strong>Maps</strong>
-        <span style="opacity:.7">Explore places</span>
-      </div>
-      <div class="winTile" onclick="openWindowsApp('minecraft')" style="cursor:pointer">
-        <div class="icon calc">🧱</div>
-        <strong>Minecraft 3D</strong>
-        <span style="opacity:.7">Spin the block</span>
-      </div>
-      <div class="winTile" onclick="openWindowsApp('roblox')" style="cursor:pointer">
-        <div class="icon roblox">◧</div>
-        <strong>Roblox</strong>
-        <span style="opacity:.7">Avatars + Games</span>
-      </div>
-      <div class="winTile" onclick="openWindowsApp('phoneMaker')" style="cursor:pointer">
-        <div class="icon phonemaker">🎨</div>
-        <strong>Phone Maker</strong>
-        <span style="opacity:.7">Design your phone</span>
-      </div>
-      <div class="winTile" onclick="openWindowsApp('gemini')" style="cursor:pointer">
-        <div class="icon gemini">✦</div>
-        <strong>Gemini</strong>
-        <span style="opacity:.7">Ask anything</span>
-      </div>
-    </div>
-    <div class="winAppPane" id="winAppPane">
-      <div class="winAppHeader">
-        <span id="winAppTitle">App</span>
-        <button onclick="closeWinApp()">✕</button>
-      </div>
-      <div class="winAppContent">
-        <div class="winAppView" id="winEdge">
-          <div style="display:flex;gap:8px;padding:10px">
-            <input id="edgeInput" placeholder="Search or enter website" style="flex:1;padding:8px;border-radius:8px;border:1px solid #3b4a66;background:#0c1326;color:#fff">
-            <button onclick="searchEdge()" style="padding:8px 12px;border-radius:8px;border:none;background:#1b7dff;color:#fff;cursor:pointer">Go</button>
-          </div>
-          <iframe id="edgeFrame" style="flex:1;border:none;background:#000"></iframe>
-        </div>
-        <div class="winAppView" id="winCamera">
-          <video id="winCam" autoplay playsinline style="flex:1;background:#000"></video>
-        </div>
-        <div class="winAppView" id="winYouTube">
-          <div style="padding:10px;display:flex;justify-content:flex-end">
-            <button onclick="openYouTube()" style="padding:8px 12px;border-radius:8px;border:none;background:#ff2f2f;color:#fff;cursor:pointer">Open in YouTube</button>
-          </div>
-          <iframe id="winTube" style="flex:1;border:none" allowfullscreen referrerpolicy="no-referrer-when-downgrade" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
-        </div>
-        <div class="winAppView" id="winSettings">
-          <div style="padding:16px;color:#fff">
-            <h3 style="margin-bottom:10px">Settings</h3>
-            <ul style="list-style:none;display:grid;gap:8px;font-size:14px">
-              <li>Bluetooth • Connected</li>
-              <li>Wi‑Fi • Home Network</li>
-              <li>Display • 4K HDR</li>
-              <li>Personalization • Dark</li>
-            </ul>
-          </div>
-        </div>
-        <div class="winAppView" id="winNotes">
-          <textarea id="winNoteArea" style="flex:1;border:none;padding:15px;background:#0c1326;color:#fff">Windows notes…</textarea>
-        </div>
-        <div class="winAppView" id="winMaps">
-          <iframe id="winMapFrame" style="flex:1;border:none" src="https://www.openstreetmap.org/export/embed.html"></iframe>
-        </div>
-        <div class="winAppView" id="winMinecraft">
-          <div class="minecraftStage">
-            <div class="minecraftCube">
-              <div class="minecraftFace front minecraftGrass"></div>
-              <div class="minecraftFace back minecraftGrass"></div>
-              <div class="minecraftFace right minecraftGrass"></div>
-              <div class="minecraftFace left minecraftGrass"></div>
-              <div class="minecraftFace top minecraftGrass"></div>
-              <div class="minecraftFace bottom minecraftDirt"></div>
-            </div>
-          </div>
-        </div>
-        <div class="winAppView" id="winRoblox">
-          <div class="robloxLayout">
-            <div class="robloxPanel">
-              <h4>Choose 3D Character</h4>
-              <div class="robloxCharacters" id="robloxCharacters">
-                <div class="robloxCharacter active" onclick="selectRobloxCharacter(0)"><div class="avatar3d"><div class="avatarBody"></div></div><small>Builder</small></div>
-                <div class="robloxCharacter" onclick="selectRobloxCharacter(1)"><div class="avatar3d"><div class="avatarBody"></div></div><small>Runner</small></div>
-                <div class="robloxCharacter" onclick="selectRobloxCharacter(2)"><div class="avatar3d"><div class="avatarBody"></div></div><small>Wizard</small></div>
-              </div>
-              <div class="robloxNowPlaying" id="robloxSelected">Selected: Builder</div>
-            </div>
-            <div class="robloxPanel">
-              <h4>Games to Play</h4>
-              <div class="robloxGames">
-                <button class="robloxGameBtn" onclick="playRobloxGame('obby')">🏃 Speed Obby Challenge</button>
-                <button class="robloxGameBtn" onclick="playRobloxGame('tycoon')">🏭 Mega Factory Tycoon</button>
-                <button class="robloxGameBtn" onclick="playRobloxGame('sim')">🐾 Pet Simulator Galaxy</button>
-                <button class="robloxGameBtn" onclick="playRobloxGame('battle')">⚔️ Battle Arena Legends</button>
-              </div>
-              <div class="robloxNowPlaying" id="robloxGameStatus">No game launched yet.</div>
-            </div>
-          </div>
-        </div>
-        <div class="winAppView" id="winPhoneMaker">
-          <div class="phoneMakerLayout">
-            <div class="phoneMakerCard">
-              <h4>Body Color</h4>
-              <div class="phoneMakerSwatches">
-                <button class="swatch" style="background:#050505" onclick="setPhoneColor('#050505')"></button>
-                <button class="swatch" style="background:#1f2940" onclick="setPhoneColor('#1f2940')"></button>
-                <button class="swatch" style="background:#3e1d52" onclick="setPhoneColor('#3e1d52')"></button>
-                <button class="swatch" style="background:#3f2b1f" onclick="setPhoneColor('#3f2b1f')"></button>
-              </div>
-              <h4 style="margin-top:10px">Wallpaper</h4>
-              <button class="wallBtn" onclick="setPhoneWallpaper('nebula')">Nebula</button>
-              <button class="wallBtn" onclick="setPhoneWallpaper('sunset')">Sunset</button>
-              <button class="wallBtn" onclick="setPhoneWallpaper('matrix')">Matrix</button>
-            </div>
-            <div class="phoneMakerCard">
-              <h4>Preview</h4>
-              <div class="phonePreviewMini" id="phonePreviewMini">
-                <div class="phonePreviewMiniScreen" id="phonePreviewMiniScreen"></div>
-              </div>
-              <div class="robloxNowPlaying" id="winPhoneMakerStatus">Ready to design.</div>
-              <button class="designApply" onclick="applyPhoneDesign()">Apply & Use Phone</button>
-            </div>
-          </div>
-        </div>
-        <div class="winAppView" id="winGemini">
-          <div class="phoneMakerLayout">
-            <div class="phoneMakerCard">
-              <h4>Gemini Assistant</h4>
-              <p style="font-size:13px;opacity:.85;line-height:1.4">Use Gemini directly inside this website view. If your browser blocks embedding, use open in new tab.</p>
-              <textarea id="geminiPromptWin" style="margin-top:8px;width:100%;min-height:120px;border-radius:10px;border:1px solid rgba(255,255,255,.15);padding:10px;background:#111827;color:#fff" placeholder="Ask Gemini anything..."></textarea>
-              <button class="designApply" onclick="openGeminiWithPrompt('win')">Load Gemini Here</button>
-              <button class="wallBtn" onclick="openGeminiHome()">Open Gemini in New Tab</button>
-            </div>
-            <div class="phoneMakerCard" style="display:flex;flex-direction:column">
-              <h4>Status</h4>
-              <div id="geminiStatusWin" class="robloxNowPlaying">Ready.</div>
-              <iframe id="geminiFrameWin" style="margin-top:8px;flex:1;border:none;border-radius:10px;background:#fff" title="Gemini Web View"></iframe>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="winTaskbar">
-      <div class="icon windows" onclick="openWindowsApp('start')" style="cursor:pointer">🪟</div>
-      <div class="icon edge" onclick="openWindowsApp('edge')" style="cursor:pointer">🌐</div>
-      <div class="icon winCamera" onclick="openWindowsApp('camera')" style="cursor:pointer">📷</div>
-      <div class="icon winYouTube" onclick="openWindowsApp('youtube')" style="cursor:pointer">▶️</div>
-    </div>
-  </div>
-  <div class="back" onclick="closeWindows11()" style="top:12px;right:16px;left:auto;">Close</div>
-</div>
-
-<!-- SOLAR SYSTEM (3D) -->
-<div class="appWindow" id="solar">
-    <div class="header">Solar System</div>
-    <div class="back" onclick="closeSolarSystem()">Back</div>
-    <div style="display:flex;gap:8px;justify-content:center;padding:8px 0;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)">
-      <button onclick="zoomOut()" style="padding:6px 10px;border-radius:8px;border:none;background:#222;color:#fff;cursor:pointer">−</button>
-      <button onclick="zoomIn()" style="padding:6px 10px;border-radius:8px;border:none;background:#222;color:#fff;cursor:pointer">+</button>
-    </div>
-    <div id="solarContainer" style="flex:1;position:relative;background:#000"></div>
-</div>
-
-  <!-- MAPS -->
-  <div class="appWindow" id="maps">
-    <div class="header">Maps</div>
-    <div class="back" onclick="closeMap()">Back</div>
-    <div style="display:flex;gap:8px;padding:8px;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)">
-      <input id="mapSearch" placeholder="Search place" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ccc">
-      <button onclick="doSearch()" style="padding:6px 10px;border-radius:8px;border:none;background:#222;color:#fff;cursor:pointer">Search</button>
-      <button onclick="geolocate()" style="padding:6px 10px;border-radius:8px;border:none;background:#2277ff;color:#fff;cursor:pointer">Locate</button>
-      <button id="satToggle" onclick="toggleSatellite()" style="padding:6px 10px;border-radius:8px;border:none;background:#444;color:#fff;cursor:pointer">Satellite</button>
-      <button id="googleToggle" onclick="toggleGoogle()" style="padding:6px 10px;border-radius:8px;border:none;background:#d44638;color:#fff;cursor:pointer">Google</button>
-    </div>
-    <div id="mapContainer" style="flex:1;position:relative;background:#ddd"></div>
-  </div>
-
-<!-- CALCULATOR -->
-<div class="appWindow" id="calc">
-  <div class="header">Calculator</div>
-  <div class="back" onclick="closeApp('calc')">Back</div>
-  <input id="calcDisplay" readonly style="margin:10px;padding:10px;font-size:24px">
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:10px">
-    <button onclick="press('1')">1</button><button onclick="press('2')">2</button><button onclick="press('3')">3</button><button onclick="press('+')">+</button>
-    <button onclick="press('4')">4</button><button onclick="press('5')">5</button><button onclick="press('6')">6</button><button onclick="press('-')">-</button>
-    <button onclick="press('7')">7</button><button onclick="press('8')">8</button><button onclick="press('9')">9</button><button onclick="press('*')">*</button>
-    <button onclick="press('0')">0</button><button onclick="press('.')">.</button><button onclick="calculate()">=</button><button onclick="press('/')">/</button>
-  </div>
-</div>
-
-<!-- CLOCK -->
-<div class="appWindow" id="clockApp">
-  <div class="header">Clock</div>
-  <div class="back" onclick="closeApp('clockApp')">Back</div>
-  <div id="bigClock" style="font-size:60px;text-align:center;margin-top:120px"></div>
-</div>
-
-<!-- CAMERA -->
-<div class="appWindow" id="camera">
-  <div class="header">Camera</div>
-  <div class="back" onclick="closeCamera()">Back</div>
-  <video id="cam" autoplay style="flex:1;background:black"></video>
-</div>
-
-<!-- MINECRAFT -->
-<div class="appWindow" id="minecraft">
-  <div class="header">Minecraft 3D</div>
-  <div class="back" onclick="closeApp('minecraft')">Back</div>
-  <div class="minecraftStage">
-    <div class="minecraftCube">
-      <div class="minecraftFace front minecraftGrass"></div>
-      <div class="minecraftFace back minecraftGrass"></div>
-      <div class="minecraftFace right minecraftStone"></div>
-      <div class="minecraftFace left minecraftStone"></div>
-      <div class="minecraftFace top minecraftGrass"></div>
-      <div class="minecraftFace bottom minecraftDirt"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ROBLOX -->
-<div class="appWindow" id="roblox">
-  <div class="header">Roblox</div>
-  <div class="back" onclick="closeApp('roblox')">Back</div>
-  <div class="robloxLayout">
-    <div class="robloxPanel">
-      <h4>Choose 3D Character</h4>
-      <div class="robloxCharacters" id="robloxCharactersHome">
-        <div class="robloxCharacter active" onclick="selectRobloxCharacter(0,'home')"><div class="avatar3d"><div class="avatarBody"></div></div><small>Builder</small></div>
-        <div class="robloxCharacter" onclick="selectRobloxCharacter(1,'home')"><div class="avatar3d"><div class="avatarBody"></div></div><small>Runner</small></div>
-        <div class="robloxCharacter" onclick="selectRobloxCharacter(2,'home')"><div class="avatar3d"><div class="avatarBody"></div></div><small>Wizard</small></div>
-      </div>
-      <div class="robloxNowPlaying" id="robloxSelectedHome">Selected: Builder</div>
-    </div>
-    <div class="robloxPanel">
-      <h4>Games to Play</h4>
-      <div class="robloxGames">
-        <button class="robloxGameBtn" onclick="playRobloxGame('obby')">🏃 Speed Obby Challenge</button>
-        <button class="robloxGameBtn" onclick="playRobloxGame('tycoon')">🏭 Mega Factory Tycoon</button>
-        <button class="robloxGameBtn" onclick="playRobloxGame('sim')">🐾 Pet Simulator Galaxy</button>
-        <button class="robloxGameBtn" onclick="playRobloxGame('battle')">⚔️ Battle Arena Legends</button>
-      </div>
-      <div class="robloxNowPlaying" id="robloxGameStatusHome">No game launched yet.</div>
-    </div>
-  </div>
-</div>
-<!-- PHONE MAKER -->
-<div class="appWindow" id="phoneMaker">
-  <div class="header">Phone Maker</div>
-  <div class="back" onclick="closeApp('phoneMaker')">Back</div>
-  <div class="phoneMakerLayout">
-    <div class="phoneMakerCard">
-      <h4>Body Color</h4>
-      <div class="phoneMakerSwatches">
-        <button class="swatch" style="background:#050505" onclick="setPhoneColor('#050505')"></button>
-        <button class="swatch" style="background:#1f2940" onclick="setPhoneColor('#1f2940')"></button>
-        <button class="swatch" style="background:#3e1d52" onclick="setPhoneColor('#3e1d52')"></button>
-        <button class="swatch" style="background:#3f2b1f" onclick="setPhoneColor('#3f2b1f')"></button>
-      </div>
-      <h4 style="margin-top:10px">Wallpaper</h4>
-      <button class="wallBtn" onclick="setPhoneWallpaper('nebula')">Nebula</button>
-      <button class="wallBtn" onclick="setPhoneWallpaper('sunset')">Sunset</button>
-      <button class="wallBtn" onclick="setPhoneWallpaper('matrix')">Matrix</button>
-    </div>
-    <div class="phoneMakerCard">
-      <h4>Preview</h4>
-      <div class="phonePreviewMini" id="phonePreviewMiniHome">
-        <div class="phonePreviewMiniScreen" id="phonePreviewMiniScreenHome"></div>
-      </div>
-      <div class="robloxNowPlaying" id="phoneMakerStatus">Ready to design.</div>
-      <button class="designApply" onclick="applyPhoneDesign()">Apply & Use Phone</button>
-    </div>
-  </div>
-</div>
-
-<!-- GEMINI -->
-<div class="appWindow" id="gemini">
-  <div class="header">Gemini</div>
-  <div class="back" onclick="closeApp('gemini')">Back</div>
-  <div class="phoneMakerLayout">
-    <div class="phoneMakerCard">
-      <h4>Gemini Assistant</h4>
-      <p style="font-size:13px;opacity:.85;line-height:1.4">Load Gemini directly inside this app. If your browser blocks embeds, open in new tab.</p>
-      <textarea id="geminiPromptHome" style="margin-top:8px;width:100%;min-height:120px;border-radius:10px;border:1px solid rgba(255,255,255,.15);padding:10px;background:#111827;color:#fff" placeholder="Ask Gemini anything..."></textarea>
-      <button class="designApply" onclick="openGeminiWithPrompt('home')">Load Gemini Here</button>
-      <button class="wallBtn" onclick="openGeminiHome()">Open Gemini in New Tab</button>
-    </div>
-    <div class="phoneMakerCard" style="display:flex;flex-direction:column">
-      <h4>Status</h4>
-      <div id="geminiStatusHome" class="robloxNowPlaying">Ready.</div>
-      <iframe id="geminiFrameHome" style="margin-top:8px;flex:1;border:none;border-radius:10px;background:#fff" title="Gemini Web View"></iframe>
-    </div>
-  </div>
-</div>
-
-<div id="homebar"></div>
-
-</div></div>
-
-<script>
-const lockScreen=document.getElementById("lock");
-const homeScreen=document.getElementById("home");
-const clockDisplay=document.getElementById("clock");
-const timeDisplay=document.getElementById("time");
-const dateDisplay=document.getElementById("date");
-const bigClockDisplay=document.getElementById("bigClock");
-const calcDisplay=document.getElementById("calcDisplay");
-const camera=document.getElementById("camera");
-const cam=document.getElementById("cam");
-const safari=document.getElementById("safari");
-const safariInput=document.getElementById("safariInput");
-const safariFrame=document.getElementById("safariFrame");
-const windows11=document.getElementById("windows11");
-const bootOverlay=document.getElementById("bootOverlay");
-const winAppPane=document.getElementById("winAppPane");
-const winAppTitle=document.getElementById("winAppTitle");
-const winEdge=document.getElementById("winEdge");
-const edgeInput=document.getElementById("edgeInput");
-const edgeFrame=document.getElementById("edgeFrame");
-const winCamera=document.getElementById("winCamera");
-const winCam=document.getElementById("winCam");
-const winYouTube=document.getElementById("winYouTube");
-const winTube=document.getElementById("winTube");
-const winSettings=document.getElementById("winSettings");
-const winNotes=document.getElementById("winNotes");
-const winMaps=document.getElementById("winMaps");
-const winMinecraft=document.getElementById("winMinecraft");
-const winRoblox=document.getElementById("winRoblox");
-const winPhoneMaker=document.getElementById("winPhoneMaker");
-const winGemini=document.getElementById("winGemini");
-const phoneElement=document.getElementById("phone");
-const screenElement=document.getElementById("screen");
-const noteArea = document.getElementById("noteArea");
-
-// Solar system state
-let solarInitialized = false;
-let solarRenderer = null;
-let solarScene = null;
-let solarCamera = null;
-let solarAnimationId = null;
-let solarContainer = null;
-let cameraDistance = 180;
-let solarWheelHandler = null;
-
-function unlock(){
-  lockScreen.style.display="none";
-  homeScreen.style.display="block";
-}
-function openApp(id){document.getElementById(id).style.display="flex";}
-function closeApp(id){document.getElementById(id).style.display="none";}
-function openWindows11(){
-  windows11.style.display="flex";
-  bootOverlay.style.display="flex";
-  setTimeout(()=>{ bootOverlay.style.display="none"; },1800);
-}
-function closeWindows11(){
-  closeWinApp();
-  windows11.style.display="none";
-}
-function openWindowsApp(app){
-  const views = [winEdge, winCamera, winYouTube, winSettings, winNotes, winMaps, winMinecraft, winRoblox, winPhoneMaker, winGemini];
-  views.forEach(v=>v.classList.remove("active"));
-  winAppPane.style.display="flex";
-  switch(app){
-    case 'edge':
-      winAppTitle.innerText = 'Edge';
-      winEdge.classList.add("active");
-      setTimeout(()=>edgeInput.focus(),50);
-      return;
-    case 'camera':
-      winAppTitle.innerText = 'Camera';
-      winCamera.classList.add("active");
-      startWinCamera();
-      return;
-    case 'youtube':
-      winAppTitle.innerText = 'YouTube';
-      winYouTube.classList.add("active");
-      winTube.src = "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0";
-      return;
-    case 'settings':
-      winAppTitle.innerText = 'Settings';
-      winSettings.classList.add("active");
-      return;
-    case 'notes':
-      winAppTitle.innerText = 'Notes';
-      winNotes.classList.add("active");
-      return;
-    case 'maps':
-      winAppTitle.innerText = 'Maps';
-      winMaps.classList.add("active");
-      return;
-    case 'minecraft':
-      winAppTitle.innerText = 'Minecraft 3D';
-      winMinecraft.classList.add("active");
-      return;
-    case 'roblox':
-      winAppTitle.innerText = 'Roblox';
-      winRoblox.classList.add("active");
-      return;
-    case 'phoneMaker':
-      winAppTitle.innerText = 'Phone Maker';
-      winPhoneMaker.classList.add("active");
-      syncPhoneMakerPreviews();
-      return;
-    case 'gemini':
-      winAppTitle.innerText = 'Gemini';
-      winGemini.classList.add("active");
-      return;
-    case 'start':
-    default:
-      winAppPane.style.display="none";
-      bootOverlay.style.display="flex";
-      setTimeout(()=>{ bootOverlay.style.display="none"; },1200);
-  }
-}
-function closeWinApp(){
-  winAppPane.style.display="none";
-  stopWinCamera();
-  winTube.src = "";
-}
-function searchEdge(){
-  let v=edgeInput.value.trim();
-  if(!v) return;
-  if(!v.includes(".")) edgeFrame.src="https://duckduckgo.com/html/?q="+encodeURIComponent(v);
-  else{
-    if(!v.startsWith("http")) v="https://"+v;
-    edgeFrame.src=v;
-  }
-}
-let winStream = null;
-function startWinCamera(){
-  if(winStream) return;
-  navigator.mediaDevices.getUserMedia({video:true}).then(s=>{
-    winStream=s;
-    winCam.srcObject=s;
-  }).catch(e=>console.error('Windows camera error', e));
-}
-function stopWinCamera(){
-  if(winStream){
-    winStream.getTracks().forEach(t=>t.stop());
-    winStream = null;
-  }
-  if(winCam) winCam.srcObject = null;
-}
-
-
-const phoneDesign = { color:'#050505', wallpaper:'nebula' };
-function wallpaperByName(name){
-  if(name==='sunset') return 'linear-gradient(145deg,#3f1d4e,#ff6f61 55%,#ffbf69)';
-  if(name==='matrix') return 'linear-gradient(160deg,#02120a,#063b1f 55%,#0b2015)';
-  return 'linear-gradient(140deg,#0b0f2a,#1f0f2b 55%,#0b1b2a)';
-}
-function setPhoneColor(color){
-  phoneDesign.color = color;
-  syncPhoneMakerPreviews();
-  setDesignStatus('Body color selected.');
-}
-function setPhoneWallpaper(name){
-  phoneDesign.wallpaper = name;
-  syncPhoneMakerPreviews();
-  setDesignStatus('Wallpaper selected.');
-}
-function setDesignStatus(text){
-  const a=document.getElementById('phoneMakerStatus');
-  const b=document.getElementById('winPhoneMakerStatus');
-  if(a) a.innerText=text;
-  if(b) b.innerText=text;
-}
-function syncPhoneMakerPreviews(){
-  const p1=document.getElementById('phonePreviewMini');
-  const p2=document.getElementById('phonePreviewMiniHome');
-  const s1=document.getElementById('phonePreviewMiniScreen');
-  const s2=document.getElementById('phonePreviewMiniScreenHome');
-  [p1,p2].forEach(p=>{ if(p) p.style.background = phoneDesign.color; });
-  const wall = wallpaperByName(phoneDesign.wallpaper);
-  [s1,s2].forEach(s=>{ if(s) s.style.background = wall; });
-}
-function applyPhoneDesign(){
-  phoneElement.style.background = `linear-gradient(160deg,${phoneDesign.color},#050505)`;
-  screenElement.style.background = wallpaperByName(phoneDesign.wallpaper);
-  setDesignStatus('Design applied! Now use your custom phone.');
-}
-
-const robloxCharacters = ["Builder", "Runner", "Wizard"];
-function selectRobloxCharacter(index, scope='win'){
-  const root = scope === 'home' ? document.getElementById('robloxCharactersHome') : document.getElementById('robloxCharacters');
-  const selected = scope === 'home' ? document.getElementById('robloxSelectedHome') : document.getElementById('robloxSelected');
-  if(!root || !selected) return;
-  [...root.querySelectorAll('.robloxCharacter')].forEach((el,i)=>{
-    if(i===index) el.classList.add('active');
-    else el.classList.remove('active');
-  });
-  selected.innerText = `Selected: ${robloxCharacters[index]||robloxCharacters[0]}`;
-}
-
-function playRobloxGame(game){
-  const urls = {
-    obby:'https://www.roblox.com/discover/',
-    tycoon:'https://www.roblox.com/discover/',
-    sim:'https://www.roblox.com/discover/',
-    battle:'https://www.roblox.com/discover/'
-  };
-  const labels = {
-    obby:'Launching Speed Obby Challenge...',
-    tycoon:'Launching Mega Factory Tycoon...',
-    sim:'Launching Pet Simulator Galaxy...',
-    battle:'Launching Battle Arena Legends...'
-  };
-  const winStatus = document.getElementById('robloxGameStatus');
-  const homeStatus = document.getElementById('robloxGameStatusHome');
-  if(winStatus) winStatus.innerText = labels[game] || 'Launching game...';
-  if(homeStatus) homeStatus.innerText = labels[game] || 'Launching game...';
-  window.open(urls[game] || urls.obby, '_blank');
-}
-
-/* TIME */
-setInterval(()=>{
-  let d=new Date();
-  let t=d.getHours()+":"+d.getMinutes().toString().padStart(2,"0");
-  clockDisplay.innerText=timeDisplay.innerText=t;
-  if(bigClockDisplay) bigClockDisplay.innerText=t;
-  const day=d.toLocaleDateString("en-US",{weekday:"long"});
-  const month=d.toLocaleDateString("en-US",{month:"short"});
-  const dateNum=d.getDate();
-  dateDisplay.innerText=`${day} • ${month} ${dateNum}`;
-},1000);
-
-/* SAFARI – GUARANTEED ENTER */
-function openSafariApp(){
-  safari.style.display="flex";
-  setTimeout(()=>safariInput.focus(),50);
-}
-function closeSafari(){
-  safari.style.display="none";
-  safariFrame.src="about:blank";
-}
-document.addEventListener("keydown",e=>{
-  if(safari.style.display!=="flex")return;
-  if(document.activeElement!==safariInput)return;
-  if(e.key!=="Enter")return;
-  let v=safariInput.value.trim();
-  if(!v)return;
-  if(!v.includes(".")) safariFrame.src="https://duckduckgo.com/html/?q="+encodeURIComponent(v);
-  else{
-    if(!v.startsWith("http")) v="https://"+v;
-    if(v.includes("google")||v.includes("youtube"))
-      window.open(v,"_blank");
-    else safariFrame.src=v;
-  }
-});
-document.addEventListener("keydown",e=>{
-  if(winAppPane.style.display!=="flex")return;
-  if(document.activeElement!==edgeInput)return;
-  if(e.key!=="Enter")return;
-  searchEdge();
-});
-
-/* YOUTUBE */
-function openYouTube(){
-  window.open("https://m.youtube.com","_blank");
-}
-/* Face ID (demo) */
-let faceStream=null;
-let faceVideo=document.getElementById("faceVideo");
-let faceOverlay=document.getElementById("faceOverlay");
-let faceStatus=document.getElementById("faceStatus");
-let faceDetector=null;
-let faceLoopId=null;
-let faceSuccessCount=0;
-
-async function startFaceID(){
-  faceStatus.innerText='Initializing camera...';
-  try{
-    faceStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}});
-    faceVideo.srcObject = faceStream;
-    faceOverlay.style.display = 'flex';
-    faceStatus.innerText='Looking for a face — please center your face in view';
-    if('FaceDetector' in window){
-      faceDetector = new FaceDetector({fastMode:true, maxDetectedFaces:1});
-      faceSuccessCount = 0;
-      faceLoop();
-    } else {
-      faceStatus.innerText='FaceDetector API not available — click Verify to simulate verification';
-      // Provide a fallback "simulate" flow: after 2s, accept if user keeps camera open
-      setTimeout(()=>{
-        faceStatus.innerText='No native face detector; unlocking in 2s if camera is still active...';
-        setTimeout(()=>{
-          if(faceStream) { faceStatus.innerText='Verified (simulated)'; stopFaceID(); unlock(); }
-        },2000);
-      },500);
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roblox Player Lookup</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0f172a;
+      --card: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --danger: #f87171;
     }
-  }catch(err){
-    faceStatus.innerText='Camera permission denied or error.';
-    console.error('FaceID start error',err);
-  }
-}
 
-async function faceLoop(){
-  if(!faceDetector || !faceVideo) return;
-  try{
-    const faces = await faceDetector.detect(faceVideo);
-    if(faces && faces.length>0){
-      faceSuccessCount++;
-      faceStatus.innerText = `Face detected (${faceSuccessCount}/3)`;
-      if(faceSuccessCount>=3){
-        faceStatus.innerText='Face verified';
-        stopFaceID();
-        unlock();
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at top, #1e293b, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: min(760px, 100%);
+      background: color-mix(in oklab, var(--card) 86%, black);
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    h1 { margin: 0 0 8px; font-size: clamp(1.4rem, 2.8vw, 2rem); }
+    p { margin-top: 0; color: var(--muted); }
+    .row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+
+    input, button {
+      border-radius: 10px;
+      border: 1px solid #475569;
+      font-size: 1rem;
+      padding: 12px 14px;
+    }
+
+    input { flex: 1; min-width: 220px; background: #0b1221; color: var(--text); }
+
+    button {
+      background: linear-gradient(135deg, #0891b2, #0e7490);
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      min-width: 150px;
+    }
+
+    button:disabled { opacity: 0.6; cursor: wait; }
+
+    .result {
+      background: #0b1221;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 14px;
+      line-height: 1.6;
+    }
+
+    .label { color: var(--muted); }
+    .error { color: var(--danger); }
+    .small { font-size: 0.9rem; color: var(--muted); margin-top: 12px; }
+    h3 { margin: 12px 0 6px; font-size: 1rem; }
+    ul { margin: 6px 0 0 18px; padding: 0; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Roblox Player Lookup</h1>
+    <p>Type a Roblox username to look up join date, last seen, top games, connections, and public location data.</p>
+
+    <div class="row">
+      <input id="username" type="text" placeholder="Enter Roblox username" maxlength="20" />
+      <button id="lookup">Get Player Info</button>
+    </div>
+
+    <section id="result" class="result" aria-live="polite">
+      Enter a username and click <strong>Get Player Info</strong>.
+    </section>
+
+    <div class="small">
+      Uses endpoint fallbacks, input caching, and rate-limit cooldown to reduce request failures.
+    </div>
+  </main>
+
+  <script>
+    const input = document.getElementById('username');
+    const button = document.getElementById('lookup');
+    const result = document.getElementById('result');
+
+    const cache = new Map();
+
+    const fmt = (value) => {
+      if (!value) return 'Not available';
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+    };
+
+    const esc = (value) => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+    async function clearOldServiceWorkers() {
+      if (!('serviceWorker' in navigator)) return;
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+      } catch {
+        // Ignore service worker cleanup failures.
+      }
+    }
+
+    let rateLimitUntil = 0;
+
+    function ensureNotRateLimited() {
+      if (Date.now() < rateLimitUntil) {
+        const secondsLeft = Math.ceil((rateLimitUntil - Date.now()) / 1000);
+        throw new Error(`Rate limited by Roblox mirror. Please wait ${secondsLeft}s and try again.`);
+      }
+    }
+
+    async function fetchJson(url, options = {}) {
+      ensureNotRateLimited();
+
+      const response = await fetch(url, { cache: 'no-store', ...options });
+      if (response.status === 429) {
+        rateLimitUntil = Date.now() + 60_000;
+        throw new Error('Rate limited by Roblox mirror. Please wait 60s and try again.');
+      }
+      if (!response.ok) {
+        throw new Error(`Request failed (${response.status})`);
+      }
+      return await response.json();
+    }
+
+    async function getUserIdByUsername(username) {
+      const encoded = encodeURIComponent(username);
+      const endpoints = [
+        {
+          url: `https://users.roproxy.com/v1/users/search?keyword=${encoded}&limit=10`,
+          extractor: (data) => {
+            const users = Array.isArray(data?.data) ? data.data : [];
+            const match = users.find((u) => (u?.name || '').toLowerCase() === username.toLowerCase());
+            return match?.id;
+          }
+        },
+        {
+          url: `https://api.roproxy.com/users/get-by-username?username=${encoded}`,
+          extractor: (data) => data?.Id || data?.id
+        }
+      ];
+
+      let hadRateLimit = false;
+      let hadNetworkIssue = false;
+
+      for (const endpoint of endpoints) {
+        try {
+          const data = await fetchJson(endpoint.url);
+          const userId = endpoint.extractor(data);
+          if (userId) return userId;
+        } catch (error) {
+          const message = String(error?.message || '');
+          if (message.includes('Rate limited')) {
+            hadRateLimit = true;
+            break;
+          }
+          if (error instanceof TypeError || message.includes('Failed to fetch') || message.includes('ERR_NAME_NOT_RESOLVED')) {
+            hadNetworkIssue = true;
+          }
+          // Try next endpoint.
+        }
+      }
+
+      if (hadRateLimit) {
+        throw new Error('Rate limited by Roblox mirror. Wait about 60 seconds before trying again.');
+      }
+      if (hadNetworkIssue) {
+        throw new Error('Could not reach Roblox endpoints (network/DNS/CORS). Try again shortly.');
+      }
+      throw new Error('Username not found.');
+    }
+
+    async function getUserProfile(userId) {
+      return fetchJson(`https://users.roproxy.com/v1/users/${userId}`);
+    }
+
+    async function getLastSeen(userId) {
+      const endpoints = [
+        {
+          url: `https://presence.roproxy.com/v1/presence/last-online?userIds=${userId}`,
+          extractor: (json) => json?.lastOnlineTimestamps?.[0]?.lastOnline || json?.lastOnlineTimestamps?.[0]
+        },
+        {
+          url: `https://presence.roproxy.com/v1/presence/users?userIds=${userId}`,
+          extractor: (json) => json?.userPresences?.[0]?.lastOnline
+        },
+        {
+          url: `https://api.roproxy.com/users/${userId}/onlinestatus`,
+          extractor: (json) => json?.LastOnline || json?.lastOnline
+        }
+      ];
+
+      for (const endpoint of endpoints) {
+        try {
+          const data = await fetchJson(endpoint.url);
+          const value = endpoint.extractor(data);
+          if (value) return value;
+        } catch {
+          // Try next last-seen endpoint.
+        }
+      }
+
+      return null;
+    }
+
+    async function getTopGames(userId) {
+      try {
+        const data = await fetchJson(`https://games.roproxy.com/v2/users/${userId}/games?accessFilter=Public&limit=10&sortOrder=Desc`);
+        const games = Array.isArray(data?.data) ? data.data : [];
+        return games.slice(0, 5).map((game) => game.name || game.rootPlace?.name).filter(Boolean);
+      } catch {
+        return [];
+      }
+    }
+
+    async function getConnections(userId) {
+      const endpoints = [
+        { key: 'friends', url: `https://friends.roproxy.com/v1/users/${userId}/friends/count`, pick: (d) => d?.count },
+        { key: 'followers', url: `https://friends.roproxy.com/v1/users/${userId}/followers/count`, pick: (d) => d?.count },
+        { key: 'following', url: `https://friends.roproxy.com/v1/users/${userId}/followings/count`, pick: (d) => d?.count }
+      ];
+
+      const resultData = { friends: null, followers: null, following: null };
+
+      await Promise.all(endpoints.map(async (endpoint) => {
+        try {
+          const data = await fetchJson(endpoint.url);
+          const value = endpoint.pick(data);
+          resultData[endpoint.key] = Number.isFinite(value) ? value : null;
+        } catch {
+          resultData[endpoint.key] = null;
+        }
+      }));
+
+      return resultData;
+    }
+
+    async function getLocation(userId, profile) {
+      const profileCandidates = [
+        profile?.country,
+        profile?.countryCode,
+        profile?.locale,
+        profile?.location
+      ].filter(Boolean);
+
+      if (profileCandidates.length) return profileCandidates[0];
+
+      const endpoints = [
+        {
+          url: `https://www.roblox.com/users/profile/playerinfo?userId=${userId}`,
+          extractor: (data) => data?.UserProfileInfo?.Location || data?.Location || data?.Country || data?.CountryCode
+        },
+        {
+          url: `https://users.roproxy.com/v1/users/${userId}`,
+          extractor: (data) => data?.country || data?.countryCode || data?.locale || data?.location
+        }
+      ];
+
+      for (const endpoint of endpoints) {
+        try {
+          const data = await fetchJson(endpoint.url);
+          const value = endpoint.extractor(data);
+          if (value) return value;
+        } catch {
+          // Try next location endpoint.
+        }
+      }
+
+      return 'Not shared publicly';
+    }
+
+    function renderGames(games) {
+      if (!games.length) return '<div>Not available</div>';
+      return `<ul>${games.map((game) => `<li>${esc(game)}</li>`).join('')}</ul>`;
+    }
+
+    function renderConnections(connections) {
+      const f = (value) => (value === null ? 'Not available' : value.toLocaleString());
+      return `
+        <div><span class="label">Friends:</span> ${f(connections.friends)}</div>
+        <div><span class="label">Followers:</span> ${f(connections.followers)}</div>
+        <div><span class="label">Following:</span> ${f(connections.following)}</div>
+      `;
+    }
+
+    async function lookup() {
+      const username = input.value.trim();
+      if (!/^[A-Za-z0-9_]{3,20}$/.test(username)) {
+        result.innerHTML = '<span class="error">Enter a valid Roblox username (3-20 letters, numbers, underscores).</span>';
         return;
       }
-    } else {
-      faceSuccessCount = 0;
-      faceStatus.innerText = 'No face detected — please hold still';
+
+      button.disabled = true;
+      result.textContent = 'Looking up player info...';
+
+      const key = username.toLowerCase();
+      if (cache.has(key)) {
+        result.innerHTML = cache.get(key);
+        button.disabled = false;
+        return;
+      }
+
+      try {
+        const userId = await getUserIdByUsername(username);
+        const profile = await getUserProfile(userId);
+        const [lastSeen, topGames, connections, location] = await Promise.all([
+          getLastSeen(userId),
+          getTopGames(userId),
+          getConnections(userId),
+          getLocation(userId, profile)
+        ]);
+
+        const html = `
+          <div><span class="label">Username:</span> <strong>${esc(profile.name || username)}</strong></div>
+          <div><span class="label">Display Name:</span> ${esc(profile.displayName || 'Not available')}</div>
+          <div><span class="label">User ID:</span> ${esc(profile.id || userId)}</div>
+          <div><span class="label">Joined:</span> ${fmt(profile.created)}</div>
+          <div><span class="label">Last Seen Online:</span> ${fmt(lastSeen)}</div>
+          <div><span class="label">Location:</span> ${esc(location)}</div>
+          <h3>Most Played / Recent Public Games</h3>
+          ${renderGames(topGames)}
+          <h3>Connections</h3>
+          ${renderConnections(connections)}
+        `;
+        cache.set(key, html);
+        result.innerHTML = html;
+      } catch (error) {
+        const message = error instanceof TypeError
+          ? 'Could not contact Roblox endpoints (network/DNS/CORS). Try again in a minute.'
+          : (error.message || 'Something went wrong.');
+        result.innerHTML = `<span class="error">${message}</span>`;
+      } finally {
+        button.disabled = false;
+      }
     }
-  }catch(e){
-    console.error('Face detection error',e);
-    faceStatus.innerText='Detection error — falling back';
-  }
-  faceLoopId = requestAnimationFrame(faceLoop);
-}
 
-function stopFaceID(){
-  if(faceLoopId) cancelAnimationFrame(faceLoopId);
-  faceLoopId = null;
-  if(faceStream){
-    faceStream.getTracks().forEach(t=>t.stop());
-    faceStream = null;
-  }
-  if(faceVideo) faceVideo.srcObject = null;
-  if(faceOverlay) faceOverlay.style.display = 'none';
-  faceStatus.innerText='';
-}
+    clearOldServiceWorkers();
 
-/* CAMERA */
-let stream;
-function openCamera(){
-  camera.style.display="flex";
-  navigator.mediaDevices.getUserMedia({video:true}).then(s=>{
-    stream=s;cam.srcObject=s;
-  }).catch(e=>{
-    console.error('Camera error', e);
-  });
-}
-function closeCamera(){
-  if(stream)stream.getTracks().forEach(t=>t.stop());
-  camera.style.display="none";
-}
-
-/* SOLAR: load three.js dynamically and create a simple 3D solar system */
-function loadThree(callback){
-  if(window.THREE) return callback();
-  const s=document.createElement('script');
-  s.src='https://unpkg.com/three@0.152.2/build/three.min.js';
-  s.onload = callback;
-  s.onerror = ()=>{ console.error('Failed to load three.js'); };
-  document.head.appendChild(s);
-}
-
-function openSolarSystem(){
-  const solarEl=document.getElementById('solar');
-  solarEl.style.display='flex';
-  if(!solarInitialized){
-    solarContainer = document.getElementById('solarContainer');
-    loadThree(()=>{
-      try{ initSolar(); solarInitialized=true; }
-      catch(e){ console.error('Solar init error',e); }
-      // ensure renderer matches container after layout
-      setTimeout(()=>{
-        if(solarRenderer && solarContainer){
-          solarRenderer.setSize(solarContainer.clientWidth, solarContainer.clientHeight);
-          if(solarCamera){ solarCamera.aspect = solarContainer.clientWidth/solarContainer.clientHeight; solarCamera.updateProjectionMatrix(); }
-        }
-      },60);
+    button.addEventListener('click', lookup);
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') lookup();
     });
-  }
-}
-
-function closeSolarSystem(){
-  const solarEl=document.getElementById('solar');
-  solarEl.style.display='none';
-  // stop animation and dispose
-  if(solarAnimationId) cancelAnimationFrame(solarAnimationId);
-  solarAnimationId = null;
-  if(solarRenderer){
-    solarRenderer.dispose();
-    solarRenderer.domElement.remove();
-    solarRenderer = null;
-  }
-  solarScene = null; solarCamera = null; solarInitialized = false;
-}
-
-function initSolar(){
-  const THREE = window.THREE;
-  solarScene = new THREE.Scene();
-  solarCamera = new THREE.PerspectiveCamera(45, solarContainer.clientWidth/solarContainer.clientHeight, 0.1, 2000);
-  cameraDistance = 180;
-  solarCamera.position.set(0, 50, cameraDistance);
-  solarRenderer = new THREE.WebGLRenderer({antialias:true});
-  solarRenderer.setPixelRatio(window.devicePixelRatio || 1);
-  solarRenderer.setSize(solarContainer.clientWidth, solarContainer.clientHeight);
-  solarContainer.appendChild(solarRenderer.domElement);
-
-  const ambient = new THREE.AmbientLight(0x333333);
-  solarScene.add(ambient);
-
-  // Sun
-  const sunGeo = new THREE.SphereGeometry(16, 32, 32);
-  const sunMat = new THREE.MeshBasicMaterial({color:0xffcc33});
-  const sun = new THREE.Mesh(sunGeo, sunMat);
-  solarScene.add(sun);
-  const sunLight = new THREE.PointLight(0xffffff, 2, 1000);
-  sunLight.position.set(0,0,0);
-  solarScene.add(sunLight);
-
-  // Planets data: [distance, size, color, speed]
-  const planets = [
-    [28, 3.5, 0x888888, 0.02],
-    [40, 4.8, 0xffcc99, 0.015],
-    [56, 5.5, 0x4db8ff, 0.01],
-    [78, 9.0, 0xffaa33, 0.007],
-    [110, 7.0, 0x996633, 0.005]
-  ];
-
-  const planetObjects = [];
-  planets.forEach(p=>{
-    const geo = new THREE.SphereGeometry(p[1], 24, 24);
-    const mat = new THREE.MeshPhongMaterial({color:p[2]});
-    const m = new THREE.Mesh(geo, mat);
-    m.userData = {dist:p[0], speed:p[3], angle: Math.random()*Math.PI*2};
-    solarScene.add(m);
-    planetObjects.push(m);
-    // orbit line
-    const orbitGeo = new THREE.RingGeometry(p[0]-0.05, p[0]+0.05, 64);
-    const orbitMat = new THREE.MeshBasicMaterial({color:0x444444, side: THREE.DoubleSide});
-    const orbit = new THREE.Mesh(orbitGeo, orbitMat);
-    orbit.rotation.x = Math.PI/2;
-    solarScene.add(orbit);
-  });
-
-  function onResize(){
-    if(!solarCamera || !solarRenderer) return;
-    solarCamera.aspect = solarContainer.clientWidth/solarContainer.clientHeight;
-    solarCamera.updateProjectionMatrix();
-    solarRenderer.setSize(solarContainer.clientWidth, solarContainer.clientHeight);
-  }
-  window.addEventListener('resize', onResize);
-
-  // wheel zoom handler
-  solarWheelHandler = function(e){
-    e.preventDefault();
-    const delta = Math.sign(e.deltaY) * 15;
-    setCameraDistance(cameraDistance + delta);
-  };
-  solarContainer.addEventListener('wheel', solarWheelHandler, {passive:false});
-
-  function animate(){
-    solarAnimationId = requestAnimationFrame(animate);
-    planetObjects.forEach(p=>{
-      p.userData.angle += p.userData.speed;
-      p.position.x = Math.cos(p.userData.angle) * p.userData.dist;
-      p.position.z = Math.sin(p.userData.angle) * p.userData.dist;
-      p.rotation.y += 0.01;
-    });
-    sun.rotation.y += 0.002;
-    solarRenderer.render(solarScene, solarCamera);
-  }
-  animate();
-}
-
-function setCameraDistance(d){
-  const minD = 40, maxD = 1000;
-  cameraDistance = Math.max(minD, Math.min(maxD, d));
-  if(solarCamera) solarCamera.position.z = cameraDistance;
-}
-
-function zoomIn(){ setCameraDistance(cameraDistance - 30); }
-function zoomOut(){ setCameraDistance(cameraDistance + 30); }
-
-// detect secret phrase in notes
-if(noteArea){
-  noteArea.addEventListener('input', e=>{
-    const v = (e.target.value||'').trim().toLowerCase();
-    if(v === 'secret minecraft'){
-      openSolarSystem();
-    }
-  });
-}
-/* MAPS: load Leaflet and initialize map with search/geolocate */
-let mapInitialized = false;
-let mapInstance = null;
-let mapMarker = null;
-
-function loadLeaflet(callback){
-  if(window.L) return callback();
-  // CSS
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-  document.head.appendChild(link);
-  // JS
-  const s = document.createElement('script');
-  s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-  s.onload = callback;
-  s.onerror = ()=>console.error('Failed to load Leaflet');
-  document.head.appendChild(s);
-}
-
-function openMap(){
-  const el = document.getElementById('maps');
-  el.style.display = 'flex';
-  if(!mapInitialized){
-    const container = document.getElementById('mapContainer');
-    // ensure container has explicit height
-    container.style.position = 'relative';
-    container.style.minHeight = '300px';
-    loadLeaflet(()=>{
-      try{ initMap(); mapInitialized = true; }
-      catch(e){ console.error('Map init error', e); }
-    });
-  }
-}
-
-function closeMap(){
-  const el = document.getElementById('maps');
-  el.style.display = 'none';
-  if(mapInstance){ mapInstance.remove(); mapInstance = null; }
-  mapInitialized = false;
-}
-
-function initMap(){
-  const L = window.L;
-  const container = document.getElementById('mapContainer');
-  container.innerHTML = '';
-  const mapDiv = document.createElement('div');
-  mapDiv.style.width = '100%';
-  mapDiv.style.height = '100%';
-  container.appendChild(mapDiv);
-  mapInstance = L.map(mapDiv).setView([20,0], 2);
-  // define both base (OSM) and satellite (Esri WorldImagery)
-  mapInstance._osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap contributors'
-  });
-  mapInstance._satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    maxZoom: 19,
-    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics'
-  });
-  mapInstance._currentType = 'osm';
-  mapInstance._osmLayer.addTo(mapInstance);
-  // Leaflet may need an invalidateSize after layout
-  setTimeout(()=>{ try{ if(mapInstance) mapInstance.invalidateSize(); }catch(e){} },60);
-}
-
-async function doSearch(){
-  const q = (document.getElementById('mapSearch').value||'').trim();
-  if(!q) return;
-  try{
-    const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q), {headers:{'Accept':'application/json'}});
-    const data = await res.json();
-    if(!data || data.length===0) return alert('No results');
-    const first = data[0];
-    const lat = parseFloat(first.lat), lon = parseFloat(first.lon);
-    if(mapMarker) mapMarker.remove();
-    mapInstance.setView([lat, lon], 13);
-    mapMarker = window.L.marker([lat, lon]).addTo(mapInstance).bindPopup(first.display_name).openPopup();
-  }catch(e){ console.error('Search error',e); }
-}
-
-function geolocate(){
-  if(!navigator.geolocation) return alert('Geolocation not supported');
-  navigator.geolocation.getCurrentPosition(pos=>{
-    const lat = pos.coords.latitude, lon = pos.coords.longitude;
-    if(mapMarker) mapMarker.remove();
-    mapInstance.setView([lat, lon], 14);
-    mapMarker = window.L.marker([lat, lon]).addTo(mapInstance).bindPopup('You are here').openPopup();
-  }, err=>{ alert('Unable to get location: '+err.message); });
-}
-
-function setMapType(type){
-  if(!mapInstance) return;
-  if(type === mapInstance._currentType) return;
-  if(mapInstance._currentType === 'osm') mapInstance.removeLayer(mapInstance._osmLayer);
-  else if(mapInstance._currentType === 'sat') mapInstance.removeLayer(mapInstance._satLayer);
-  if(type === 'osm') mapInstance._osmLayer.addTo(mapInstance);
-  else if(type === 'sat') mapInstance._satLayer.addTo(mapInstance);
-  mapInstance._currentType = type;
-  const btn = document.getElementById('satToggle');
-  if(btn) btn.innerText = (type==='sat' ? 'Map' : 'Satellite');
-}
-
-function toggleSatellite(){
-  if(!mapInstance) return;
-  setMapType(mapInstance._currentType === 'osm' ? 'sat' : 'osm');
-}
-
-// Google mode: use an embeddable iframe (maps?q=...&output=embed)
-let mapMode = 'leaflet';
-let googleIframe = null;
-
-function ensureMapContainer(){
-  const container = document.getElementById('mapContainer');
-  if(!container) return null;
-  return container;
-}
-
-function switchToGoogle(q){
-  const container = ensureMapContainer(); if(!container) return;
-  // remove leaflet map if present
-  if(mapInstance){ mapInstance.remove(); mapInstance = null; mapInitialized = false; }
-  container.innerHTML = '';
-  googleIframe = document.createElement('iframe');
-  googleIframe.style.border = 'none';
-  googleIframe.style.width = '100%';
-  googleIframe.style.height = '100%';
-  const base = 'https://www.google.com/maps';
-  let src = base;
-  if(q){ src = base + '?q=' + encodeURIComponent(q) + '&output=embed'; }
-  else src = base + '?output=embed';
-  googleIframe.src = src;
-  container.appendChild(googleIframe);
-  mapMode = 'google';
-  const gbtn = document.getElementById('googleToggle'); if(gbtn) gbtn.innerText='Leaflet';
-}
-
-function switchToLeaflet(){
-  const container = ensureMapContainer(); if(!container) return;
-  if(googleIframe){ googleIframe.remove(); googleIframe = null; }
-  // reinit leaflet
-  loadLeaflet(()=>{ try{ initMap(); mapInitialized = true; } catch(e){ console.error(e); } });
-  // ensure resize after switching
-  setTimeout(()=>{ try{ if(mapInstance) mapInstance.invalidateSize(); }catch(e){} },120);
-  mapMode = 'leaflet';
-  const gbtn = document.getElementById('googleToggle'); if(gbtn) gbtn.innerText='Google';
-}
-
-function toggleGoogle(){
-  if(mapMode === 'leaflet'){
-    const q = (document.getElementById('mapSearch').value||'').trim();
-    switchToGoogle(q||null);
-  } else {
-    switchToLeaflet();
-  }
-}
-
-// adapt search to google mode
-const _origDoSearch = doSearch;
-async function doSearch(){
-  const q = (document.getElementById('mapSearch').value||'').trim();
-  if(!q) return;
-  if(mapMode === 'google'){
-    if(googleIframe) googleIframe.src = 'https://www.google.com/maps?q='+encodeURIComponent(q)+'&output=embed';
-    else switchToGoogle(q);
-    return;
-  }
-  // fallback to original leaflet search
-  return _origDoSearch();
-}
-
-
-function openGeminiHome(){
-  const url = 'https://gemini.google.com/app';
-  loadGeminiFrame('home', url);
-  loadGeminiFrame('win', url);
-  window.open(url, '_blank');
-  updateGeminiStatus('Gemini loaded in app and opened in new tab.');
-}
-function openGeminiWithPrompt(scope='home'){
-  const input = scope === 'win' ? document.getElementById('geminiPromptWin') : document.getElementById('geminiPromptHome');
-  const prompt = input ? input.value.trim() : '';
-  let url = 'https://gemini.google.com/app';
-  if(prompt) url += '?q=' + encodeURIComponent(prompt);
-  loadGeminiFrame(scope, url);
-  updateGeminiStatus(prompt ? 'Loaded Gemini with your prompt.' : 'Loaded Gemini.');
-}
-function loadGeminiFrame(scope, url){
-  const frame = scope === 'win' ? document.getElementById('geminiFrameWin') : document.getElementById('geminiFrameHome');
-  if(!frame) return;
-  frame.src = url;
-}
-function updateGeminiStatus(text){
-  const a=document.getElementById('geminiStatusHome');
-  const b=document.getElementById('geminiStatusWin');
-  if(a) a.innerText=text;
-  if(b) b.innerText=text;
-}
-
-syncPhoneMakerPreviews();
-
-/* CALC */
-function press(v){calcDisplay.value+=v;}
-function calculate(){
-  try{calcDisplay.value=eval(calcDisplay.value);}catch{calcDisplay.value="Error";}
-}
-
-// Expose inline handlers to the window so onclick attributes work
-window.unlock = unlock;
-window.openApp = openApp;
-window.closeApp = closeApp;
-window.openCamera = openCamera;
-window.closeCamera = closeCamera;
-window.openSafariApp = openSafariApp;
-window.closeSafari = closeSafari;
-window.openYouTube = openYouTube;
-window.openWindows11 = openWindows11;
-window.closeWindows11 = closeWindows11;
-window.openWindowsApp = openWindowsApp;
-window.closeWinApp = closeWinApp;
-window.searchEdge = searchEdge;
-window.startFaceID = startFaceID;
-window.stopFaceID = stopFaceID;
-window.openSolarSystem = openSolarSystem;
-window.closeSolarSystem = closeSolarSystem;
-window.zoomIn = zoomIn;
-window.zoomOut = zoomOut;
-window.openMap = openMap;
-window.closeMap = closeMap;
-window.doSearch = doSearch;
-window.geolocate = geolocate;
-window.toggleSatellite = toggleSatellite;
-window.toggleGoogle = toggleGoogle;
-window.setPhoneColor = setPhoneColor;
-window.setPhoneWallpaper = setPhoneWallpaper;
-window.applyPhoneDesign = applyPhoneDesign;
-window.selectRobloxCharacter = selectRobloxCharacter;
-window.playRobloxGame = playRobloxGame;
-window.openGeminiHome = openGeminiHome;
-window.openGeminiWithPrompt = openGeminiWithPrompt;
-
-</script>
+  </script>
 </body>
 </html>
